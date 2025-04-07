@@ -3,10 +3,10 @@ import './Calculadora.css';
 
 const limitesPorRango = {
     'D': { maxStats: 15, maxStatValue: 4, maxStaminaValue: 3 },
-    'C': { maxStats: 15, maxStatValue: 4.5, maxStaminaValue: 3 },
-    'B': { maxStats: 15, maxStatValue: 5, maxStaminaValue: 4.5 },
-    'A': { maxStats: 15, maxStatValue: 5, maxStaminaValue: 4.5 },
-    'S': { maxStats: 15, maxStatValue: 5, maxStaminaValue: 5 }
+    'C': { maxStats: 19, maxStatValue: 4.5, maxStaminaValue: 3 },
+    'B': { maxStats: 25, maxStatValue: 5, maxStaminaValue: 4.5 },
+    'A': { maxStats: 29, maxStatValue: 5, maxStaminaValue: 4.5 },
+    'S': { maxStats: 35.5, maxStatValue: 5, maxStaminaValue: 5 }
 };
 
 const Calculadora = () => {
@@ -20,21 +20,14 @@ const Calculadora = () => {
     const [invalido, setInvalido] = useState(false);
 
     const handleMaxStatsChange = (e) => {
-        const value = Math.min(35.5, Math.max(15, parseFloat(e.target.value) || 15)); // Ensure minimum is 15 and maximum is 35.5
+        const value = Math.max(15, parseFloat(e.target.value) || 15); // Ensure minimum is 15
         setMaxStats(value);
     };
 
     const handleStatChange = (e) => {
         const { id, value } = e.target;
-        console.log(stats)
         setStats(prevStats => ({ ...prevStats, [id]: parseFloat(value) || 0 }));
-        console.log(stats)
-       
     };
-
-    useEffect(() => {
-        calcularAtributos();
-      }, [stats]);
 
     const resetStats = () => {
         setStats({
@@ -45,15 +38,28 @@ const Calculadora = () => {
         setResultados({});
     };
 
-    const calcularAtributos = () => {
+    const calcularRango = (total) => {
+        if (total <= 15) return 'D';
+        if (total <= 19) return 'C';
+        if (total <= 25) return 'B';
+        if (total <= 29) return 'A';
+        return 'S';
+    };
+
+    useEffect(() => {
         const valores = Object.values(stats);
         const total = valores.reduce((acc, val) => acc + val, 0);
+        setRango(calcularRango(maxStats));
+        calcularAtributos(total);
+    }, [maxStats]);
+
+    const calcularAtributos = (total) => {
         const disponibles = maxStats - total;
 
         let mensaje = '';
         let invalido = false;
 
-        if (valores.some(v => v < 0.5)) {
+        if (Object.values(stats).some(v => v < 0.5)) {
             mensaje += `⚠️ Cada stat debe tener al menos 0.5 puntos.\n`;
             invalido = true;
         }
@@ -85,8 +91,8 @@ const Calculadora = () => {
             let percepcion = 1;
             if (int >= 5) percepcion = 3;
             else if (int >= 4) percepcion = 2;
-            
-            const consumoChakraReducido = parseFloat(sm) * 10;
+
+            const consumoChakraReducido = sm * 10;
             const objetosExtra = Math.floor(int);
 
             setResultados({
@@ -99,15 +105,10 @@ const Calculadora = () => {
         <div className="calculadora-container">
             <h1>Calculadora de STATS - Naruto RPG</h1>
             <label>
-                Rango:
-                <select value={rango} onChange={(e) => setRango(e.target.value)}>
-                    {Object.keys(limitesPorRango).map(r => (
-                        <option key={r} value={r}>{r}</option>
-                    ))}
-                </select>
+                Rango: <strong>{rango}</strong>
             </label>
             <label>
-                Stats disponibles:
+                Stats Totales:
                 <input
                     type="number"
                     min="15"
@@ -136,7 +137,6 @@ const Calculadora = () => {
                 <strong>Stats disponibles:</strong> {(maxStats - Object.values(stats).reduce((acc, val) => acc + val, 0)).toFixed(1)}<br />
                 {mensaje && <p className="mensaje-error">{mensaje}</p>}
             </div>
-            {/* <button onClick={calcularAtributos} disabled={invalido}>Calcular Atributos</button> */}
             <button onClick={resetStats}>Resetear Stats</button>
             {Object.keys(resultados).length > 0 && (
                 <div className="resultados">
