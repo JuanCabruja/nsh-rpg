@@ -9,7 +9,6 @@ const limitesPorRango = {
 };
 
 const statsNames = {
-  // vit, chakra, velocidad, resistencia, reflejos, percepcion, voluntad, consumoChakraReducido, objetosExtra
   'vit': 'Vitalidad',
   'chakra': 'Chakra', 
   'velocidad': 'Velocidad', 
@@ -19,8 +18,8 @@ const statsNames = {
   'voluntad': 'Voluntad',
   'consumoChakraReducido' : 'Reducción de consumo de Chakra', 
   'objetosExtra': 'Armas Suplementarias extra'
-
 }
+
 const Calculadora = () => {
   const [rango, setRango] = useState('D');
   const [maxStats, setMaxStats] = useState(15);
