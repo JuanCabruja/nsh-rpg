@@ -23,7 +23,7 @@ const CalculadoraDeStats = () => {
     return (
         <div className="bg-white shadow-lg rounded-lg p-6 w-full">
             <h1 className="text-narutoOrange font-righteous text-2xl mb-4 text-center">
-                Calculadora de STATS - Naruto RPG
+                Calculadora de STATS
             </h1>
             <div className="space-y-4">
                 <label className="block">
@@ -35,7 +35,7 @@ const CalculadoraDeStats = () => {
                         type="number"
                         min="15"
                         max="35.5"
-                        step="0.5"
+                        step="1"
                         value={maxStats}
                         onChange={handleMaxStatsChange}
                         className="w-full border border-gray-300 rounded-md p-2"

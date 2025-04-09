@@ -10,7 +10,7 @@ const CalculadoraDaños = () => {
     // Función para calcular el daño basado en la fórmula
     const calcularDaño = () => {
         try {
-            const formulaUpperCase = formula.toLocaleLowerCase(); // Aseguramos que las variables sean minusculas
+            const formulaLowerCaser = formula.toLocaleLowerCase().replace(/,/g, "."); // Aseguramos que las variables sean minusculas
             // Multiplicamos los stats por 100 y añadimos ARMA como variable
             const variables = { ...Object.fromEntries(
                 Object.entries(stats).map(([key, value]) => [key, value * 100])
@@ -18,7 +18,7 @@ const CalculadoraDaños = () => {
             
             const resultado = new Function(
                 ...Object.keys(variables),
-                `return ${formulaUpperCase};`
+                `return ${formulaLowerCaser};`
             )(...Object.values(variables));
             setResultado(resultado.toFixed(2)); // Guardamos el resultado con 2 decimales
         } catch (error) {
