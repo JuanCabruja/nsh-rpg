@@ -4,18 +4,22 @@
 
 /* Fuente estilo Naruto */
 @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+/* Fondo con textura y color */
 body {
-    font-family: 'Righteous', cursive; /* Fuente estilo Naruto */
-    background-color: #f4e2c3; /* Fondo claro tipo papiro */
-    background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png'); /* Textura de papiro */
+    background-color: #f4e2c3; /* Color claro */
+    background-image: url('/fondo/cream-paper.png'); /* Textura de papel */
     background-size: cover;
-    background-attachment: fixed;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-
+    background-blend-mode: multiply;
+    color: #212121; /* Texto oscuro */
+  }
+  
+  /* Contenedores */
+  .container {
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+  }
 /* Lista de estadísticas sin puntos */
 .stats-list {
     font-size: 16px;

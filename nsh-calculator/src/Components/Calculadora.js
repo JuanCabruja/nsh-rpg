@@ -8,6 +8,19 @@ const limitesPorRango = {
   'S': { maxStats: 35.5, maxStatValue: 5, maxStaminaValue: 5 },
 };
 
+const statsNames = {
+  // vit, chakra, velocidad, resistencia, reflejos, percepcion, voluntad, consumoChakraReducido, objetosExtra
+  'vit': 'Vitalidad',
+  'chakra': 'Chakra', 
+  'velocidad': 'Velocidad', 
+  'resistencia': 'Resistencia',
+  'reflejos': 'Reflejos', 
+  'percepcion': 'Percepción', 
+  'voluntad': 'Voluntad',
+  'consumoChakraReducido' : 'Reducción de consumo de Chakra', 
+  'objetosExtra': 'Armas Suplementarias extra'
+
+}
 const Calculadora = () => {
   const [rango, setRango] = useState('D');
   const [maxStats, setMaxStats] = useState(15);
@@ -52,7 +65,13 @@ const Calculadora = () => {
     const total = valores.reduce((acc, val) => acc + val, 0);
     setRango(calcularRango(maxStats));
     calcularAtributos(total);
-  }, [maxStats]);
+  }, [maxStats, stats]);
+
+  useEffect(() => {
+    const valores = Object.values(stats);
+    const total = valores.reduce((acc, val) => acc + val, 0);
+    calcularAtributos(total);
+  }, [stats]);
 
   const calcularAtributos = (total) => {
     const disponibles = maxStats - total;
@@ -109,7 +128,10 @@ const Calculadora = () => {
   };
 
   return (
-    <div className="flex flex-wrap lg:flex-nowrap justify-center items-start gap-6 p-6 bg-papiro max-w-screen-xl mx-auto">
+    
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-grow">
+    <div className="flex flex-wrap lg:flex-nowrap justify-center items-start gap-6 p-6 bg-papiro bg-cover bg-center bg-blend-multiply bg-narutoLight text-narutoDark max-w-screen-xl mx-auto">
       {/* Calculadora de STATS */}
       <div className="bg-white shadow-lg rounded-lg p-6 w-full lg:w-2/3">
         <h1 className="text-narutoOrange font-righteous text-2xl mb-4 text-center">
@@ -180,7 +202,7 @@ const Calculadora = () => {
           <div className="space-y-2">
             {Object.entries(resultados).map(([key, value]) => (
               <div key={key} className="text-narutoDark">
-                <strong>{key.toUpperCase()}:</strong>{" "}
+                <strong>{statsNames[key]}:</strong>{" "}
                 {key === "consumoChakraReducido" ? `${value}%` : value}
               </div>
             ))}
@@ -235,6 +257,12 @@ const Calculadora = () => {
         </div>
       </div>
     </div>
+
+  <footer className="text-center text-sm text-gray-600 font-semibold mt-6">
+    Work in progress by <a href="https://cabruja.dev" target="_blank" rel="noopener noreferrer" className="text-narutoOrange hover:underline">cabruja.dev</a> ®. 2025 ♡
+  </footer>
+  </main>
+</div>
   );
 };
 
