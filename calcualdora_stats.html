@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calculadora de STATS - Naruto RPG</title>
+  <style>
+    @keyframes aparecer {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://i.imgur.com/ufY1cxo.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #000;
+      padding: 20px;
+    }
+
+    .container {
+      background: url('https://i.imgur.com/oM8mXuy.png') no-repeat center center;
+      background-size: cover;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 25px #e6b800;
+      animation: aparecer 1s ease-in-out;
+    }
+
+    h1 {
+      color: #b34700;
+      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 1px 1px 2px #fff;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 2px solid #a66f00;
+      background-color: #fdf5e6;
+      color: #000;
+      font-weight: bold;
+    }
+
+    input.invalid {
+      border-color: red;
+      background-color: #ffe6e6;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background-color: #e67300;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      box-shadow: 0 0 10px #ff9900;
+    }
+
+    button:disabled {
+      background-color: gray;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    button:hover:enabled {
+      background-color: #cc5200;
+      transform: scale(1.05);
+    }
+
+    #resultados, #contadorStats {
+      margin-top: 20px;
+      background-color: rgba(255, 255, 255, 0.85);
+      padding: 15px;
+      border-radius: 10px;
+      color: #000;
+      font-weight: bold;
+      animation: aparecer 0.8s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora de STATS - Naruto RPG</h1>
+
+    <label>Rango:
+      <select id="rango" onchange="actualizarContador()">
+        <option value="D">D</option>
+        <option value="C">C</option>
+        <option value="B">B</option>
+        <option value="A">A</option>
+        <option value="S">S</option>
+      </select>
+    </label>
+
+    <label>Ninjutsu (NIN): <input type="number" id="nin" step="0.5" min="0.5" max="5" oninput="actualizarContador()"/></label>
+    <label>Taijutsu (TAI): <input type="number" id="tai" step="0.5" min="0.5" max="5" oninput="actualizarContador()"/></label>
+    <label>Genjutsu (GEN): <input type="number" id="gen" step="0.5" min="0.5" max="5" oninput="actualizarContador()"/></label>
+    <label>Inteligencia (INT): <input type="number" id="int" step="0.5" min="0.5" max="5" oninput="actualizarContador()"/></label>
+    <label>Fuerza (FUE): <input type="number" id="fue" step="0.5" min="0.5" max="5" oninput="actualizarContador()"/></label>
+    <label>Agilidad (AGI): <input type="number" id="agi" step="0.5" min="0.5" max="5" oninput="actualizarContador()"/></label>
+    <label>Estamina (EST): <input type="number" id="est" step="0.5" min="0.5" max="5" oninput="actualizarContador()"/></label>
+    <label>Sellos Manuales (SM): <input type="number" id="sm" step="0.5" min="0.5" max="5" oninput="actualizarContador()"/></label>
+
+    <div id="contadorStats"></div>
+
+    <button id="btnCalcular" onclick="calcularAtributos()">Calcular Atributos</button>
+    <div id="resultados"></div>
+  </div>
+
+  <script>
+    const limitesPorRango = {
+      'D': { maxStats: 15, maxStatValue: 3 },
+      'C': { maxStats: 15, maxStatValue: 3.5 },
+      'B': { maxStats: 15, maxStatValue: 4 },
+      'A': { maxStats: 15, maxStatValue: 4.5 },
+      'S': { maxStats: 15, maxStatValue: 5 }
+    };
+
+    function calcularAtributos() {
+      const rango = document.getElementById('rango').value;
+      const statsPermitidos = 15;
+      const { maxStatValue } = limitesPorRango[rango];
+      const inputIds = ['nin', 'tai', 'gen', 'int', 'fue', 'agi', 'est', 'sm'];
+      const valores = inputIds.map(id => parseFloat(document.getElementById(id).value) || 0);
+
+      let invalido = false;
+      let mensaje = "";
+
+      const [nin, tai, gen, int, fue, agi, est, sm] = valores;
+
+      if (valores.some(v => v < 0.5)) {
+        mensaje += `⚠️ Cada stat debe tener al menos 0.5 puntos.<br>`;
+        invalido = true;
+      }
+
+      if (rango === 'D' || rango === 'C') {
+        if (valores.some(v => v === 4.5)) {
+          mensaje += `⚠️ En Rango ${rango}, no se permite asignar 4.5 en ningún stat.<br>`;
+          invalido = true;
+        }
+      }
+
+      if (rango === 'B') {
+        const cinco = valores.filter(v => v === 5).length;
+        const cuatroCinco = valores.filter(v => v === 4.5).length;
+        if (cinco > 1 || cuatroCinco > 2 || (cinco === 1 && cuatroCinco > 0)) {
+          mensaje += `⚠️ En Rango B solo puedes tener un 5 o dos 4.5 como máximo.<br>`;
+          invalido = true;
+        }
+      }
+
+      if (rango === 'A') {
+        const cinco = valores.filter(v => v === 5).length;
+        const cuatroCinco = valores.filter(v => v === 4.5).length;
+        if (!((cinco <= 1 && cuatroCinco <= 3) || (cinco <= 2 && cuatroCinco <= 2))) {
+          mensaje += `⚠️ En Rango A solo puedes tener 4.5 en tres stats y 5 en uno, o 4.5 en dos stats y 5 en dos.<br>`;
+          invalido = true;
+        }
+      }
+
+      if ((rango === 'D' || rango === 'C') && est > 3) {
+        mensaje += `⚠️ En Rango ${rango}, Estamina no puede superar 3.<br>`;
+        invalido = true;
+      }
+
+      if (rango === 'B' && est > 4.5) {
+        mensaje += `⚠️ En Rango B, Estamina no puede superar 4.5.<br>`;
+        invalido = true;
+      }
+
+      if (rango === 'A' && est > 4.5) {
+        mensaje += `⚠️ En Rango A, Estamina no puede superar 4.5.<br>`;
+        invalido = true;
+      }
+
+      inputIds.forEach((id, i) => {
+        const input = document.getElementById(id);
+        if (valores[i] > maxStatValue) {
+          input.classList.add('invalid');
+          invalido = true;
+        } else {
+          input.classList.remove('invalid');
+        }
+      });
+
+      const total = valores.reduce((acc, val) => acc + val, 0);
+      const disponibles = statsPermitidos - total;
+
+      if (total > statsPermitidos) {
+        mensaje += `⚠️ Has excedido el total de stats disponibles (${statsPermitidos}).<br>`;
+        invalido = true;
+      }
+
+      document.getElementById('contadorStats').innerHTML = `
+        <strong>Stats asignados:</strong> ${total.toFixed(1)}<br>
+        <strong>Stats disponibles:</strong> ${disponibles.toFixed(1)}<br>
+        ${mensaje}
+      `;
+
+      document.getElementById('btnCalcular').disabled = invalido;
+
+      const vit = est * 500;
+      const chakra = est * 100;
+      const velocidad = agi * 2.5;
+      const voluntad = int * 5;
+
+      let resistencia = 0;
+      if (fue >= 5) resistencia = 25;
+      else if (fue >= 4.5) resistencia = 20;
+      else if (fue >= 4) resistencia = 10;
+
+      let reflejos = 1;
+      if (agi >= 5) reflejos = 3;
+      else if (agi >= 4) reflejos = 2;
+
+      let percepcion = 1;
+      if (int >= 5) percepcion = 3;
+      else if (int >= 4) percepcion = 2;
+
+      const consumoChakraReducido = sm * 10;
+      const objetosExtra = Math.floor(int);
+
+      document.getElementById('resultados').innerHTML = `
+        <strong>Vitalidad:</strong> ${vit}<br>
+        <strong>Chakra:</strong> ${chakra}<br>
+        <strong>Velocidad:</strong> ${velocidad}<br>
+        <strong>Resistencia:</strong> ${resistencia}%<br>
+        <strong>Reflejos:</strong> ${reflejos}<br>
+        <strong>Percepción:</strong> ${percepcion}<br>
+        <strong>Voluntad:</strong> ${voluntad}<br>
+        <strong>Reducción de consumo de chakra:</strong> ${consumoChakraReducido}%<br>
+        <strong>Objetos suplementarios disponibles:</strong> ${objetosExtra}
+      `;
+    }
+
+    function actualizarContador() {
+      calcularAtributos();
+    }
+  </script>
+</body>
+</html>
+
