@@ -23,16 +23,58 @@ const statsNames = {
 };
 
 export const StatsProvider = ({ children }) => {
-  const [rango, setRango] = useState('D');
-  const [maxStats, setMaxStats] = useState(15);
-  const [stats, setStats] = useState({
-    nin: 0.5, tai: 0.5, gen: 0.5, int: 0.5, fue: 0.5, agi: 0.5, est: 0.5, sm: 0.5,
+  const [rango, setRango] = useState(() => {
+    const savedRango = localStorage.getItem('rango');
+    return savedRango ? savedRango : 'D';
   });
+
+  const [maxStats, setMaxStats] = useState(() => {
+    const savedMaxStats = localStorage.getItem('maxStats');
+    return savedMaxStats ? parseFloat(savedMaxStats) : 15;
+  }
+  );
+  
+  const [stats, setStats] = useState(() => {
+    const savedStats = localStorage.getItem('stats');
+    return savedStats ? JSON.parse(savedStats) : { nin: 0.5, tai: 0.5, gen: 0.5, int: 0.5, fue: 0.5, agi: 0.5, est: 0.5, sm: 0.5 };
+  });
+    
   const [resultados, setResultados] = useState({});
   const [mensaje, setMensaje] = useState('');
   const [invalido, setInvalido] = useState(false);
   const [habilidad, setHabilidad] = useState({ stat: 'nin', multiplicador: 1.1 });
   const [resultadoHabilidad, setResultadoHabilidad] = useState(0);
+
+  // Cargar datos desde localStorage al iniciar
+  useEffect(() => {
+    const savedStats = localStorage.getItem('stats');
+    const savedMaxStats = localStorage.getItem('maxStats');
+    const savedRango = localStorage.getItem('rango');
+
+    if (savedStats) {
+      console.log('Cargando stats desde localStorage:', savedStats);
+      setStats(JSON.parse(savedStats));
+    }
+    if (savedMaxStats) {
+      console.log('Cargando maxStats desde localStorage:', savedMaxStats);
+      setMaxStats(parseFloat(savedMaxStats));
+    } 
+    if (savedRango) {
+      console.log('Cargando rango desde localStorage:', savedRango);
+      setRango(savedRango);
+    } 
+  }, []);
+
+  // Guardar datos en localStorage cuando cambien
+  useEffect(() => {
+    console.log('Guardando datos en localStorage...');
+    console.log('Stats:', stats);
+    console.log('Max Stats:', maxStats);
+    console.log('Rango:', rango);
+    localStorage.setItem('stats', JSON.stringify(stats));
+    localStorage.setItem('maxStats', maxStats);
+    localStorage.setItem('rango', rango);
+  }, [stats, maxStats, rango]);
 
   const handleMaxStatsChange = (e) => {
     const value = Math.max(15, parseFloat(e.target.value) || 15);
@@ -45,12 +87,16 @@ export const StatsProvider = ({ children }) => {
   };
 
   const resetStats = () => {
-    setStats({
+    const defaultStats = {
       nin: 0.5, tai: 0.5, gen: 0.5, int: 0.5, fue: 0.5, agi: 0.5, est: 0.5, sm: 0.5,
-    });
+    };
+    setStats(defaultStats);
     setMensaje('');
     setInvalido(false);
     setResultados({});
+    localStorage.removeItem('stats');
+    localStorage.removeItem('maxStats');
+    localStorage.removeItem('rango');
   };
 
   const calcularRango = (total) => {
