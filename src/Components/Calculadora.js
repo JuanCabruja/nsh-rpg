@@ -3,7 +3,8 @@ import { StatsContext } from '../Context/StatsContext';
 import CalculadoraDaños from './CalculadoraDaños';
 import CalculadoraDeStats from './CalculadoraDeStats';
 import Estadisticas from './Estadisticas';
-import BuscadorDeTecnicas from './BuscadorDeTecnicas'; // Importar el nuevo componente
+import GestorDeTecnicas from './GestorDeTecnicas';
+import ArmasNinja from './ArmasNinja'; // Importar el nuevo componente
 
 const Calculadora = () => {
   const {
@@ -32,11 +33,13 @@ const Calculadora = () => {
           <div className="flex flex-col gap-6 w-full lg:w-1/3">
             <Estadisticas />
             <CalculadoraDaños />
+            <ArmasNinja /> {/* Nuevo componente para gestionar armas ninja */}
           </div>
         </div>
-        {/* Buscador de Técnicas: Ahora está dentro del contenedor con fondo */}
+        {/* Contenedor para Armas Ninja y Gestor de Técnicas */}
         <div className="flex flex-col gap-6 p-6 bg-papiro bg-cover bg-center bg-blend-multiply bg-narutoLight text-narutoDark max-w-screen-xl mx-auto">
-          <BuscadorDeTecnicas />
+
+          <GestorDeTecnicas />
         </div>
         <footer className="text-center text-sm text-gray-600 font-semibold mt-6">
           Work in progress by{' '}

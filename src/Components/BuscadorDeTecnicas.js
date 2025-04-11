@@ -27,25 +27,28 @@ const BuscadorDeTecnicas = () => {
       .catch((error) => console.error('Error al cargar las técnicas:', error));
   }, []);
 
-  // Filtrar las técnicas según los filtros seleccionados
+  // Extraer y filtrar las técnicas según los filtros seleccionados
   useEffect(() => {
+    // Extraer todas las técnicas de las categorías
     const tecnicas = categorias.flatMap((categoria) =>
       (categoria.tecnicas || categoria.jutsus || []).map((tecnica) => ({
         ...tecnica,
         categoria: categoria.disciplina || categoria.elemento || 'General',
+        descripcionCategoria: categoria.descripcion || '',
       }))
     );
 
-    setTecnicasFiltradas(
-      tecnicas.filter((tecnica) => {
-        return (
-          (!filtros.nombre || tecnica.nombre.toLowerCase().includes(filtros.nombre.toLowerCase())) &&
-          (!filtros.rango || tecnica.rango === filtros.rango) &&
-          (!filtros.tipo || tecnica.tipo.includes(filtros.tipo)) &&
-          (!filtros.elemento || tecnica.elemento === filtros.elemento)
-        );
-      })
-    );
+    // Aplicar los filtros
+    const tecnicasFiltradas = tecnicas.filter((tecnica) => {
+      return (
+        (!filtros.nombre || tecnica.nombre?.toLowerCase().includes(filtros.nombre.toLowerCase())) &&
+        (!filtros.rango || tecnica.rango === filtros.rango) &&
+        (!filtros.tipo || tecnica.tipo?.toLowerCase().includes(filtros.tipo.toLowerCase())) &&
+        (!filtros.elemento || tecnica.categoria?.toLowerCase() === filtros.elemento.toLowerCase())
+      );
+    });
+
+    setTecnicasFiltradas(tecnicasFiltradas);
   }, [filtros, categorias]);
 
   // Manejar cambios en los filtros
@@ -59,6 +62,7 @@ const BuscadorDeTecnicas = () => {
 
   // Calcular el daño basado en la fórmula de "efectos"
   const calcularDaño = (formula) => {
+    if (!formula) return 'N/A';
     const parsedFormula = formula.replace(/ARMA|AGI|TAI|INT|FUE|EST|SM|NIN/gi, (match) => {
       return stats[match.toLowerCase()] || 0; // Sustituir por el valor de la estadística
     });
@@ -128,21 +132,15 @@ const BuscadorDeTecnicas = () => {
 
       {/* Resultados */}
       <div className="mt-6 space-y-6">
-        {categorias.map((categoria, index) => (
-          <div key={index} className="border-b border-gray-300 pb-4">
-            <h3 className="text-lg font-bold text-narutoDark mb-2">{categoria.disciplina || categoria.elemento}</h3>
-            <p className="text-sm text-gray-600 mb-4">{categoria.descripcion}</p>
-            {(categoria.tecnicas || categoria.jutsus || []).map((tecnica, i) => (
-              <div
-                key={i}
-                className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 py-2"
-              >
-                <span className="font-bold text-narutoDark">{tecnica.nombre}</span>
-                <span className="text-sm text-gray-600">Costo CH: {tecnica.costoChakra}</span>
-                <span className="text-sm text-gray-600">Daño: {calcularDaño(tecnica.formula)}</span>
-                <span className="text-sm text-gray-600">Efectos: {tecnica.efectos.join(', ')}</span>
-              </div>
-            ))}
+        {tecnicasFiltradas.map((tecnica, index) => (
+          <div
+            key={index}
+            className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 py-2"
+          >
+            <span className="font-bold text-narutoDark">{tecnica.nombre || 'Técnica sin nombre'}</span>
+            <span className="text-sm text-gray-600">Costo CH: {tecnica.costoChakra || 'N/A'}</span>
+            <span className="text-sm text-gray-600">Daño: {calcularDaño(tecnica.formula)}</span>
+            <span className="text-sm text-gray-600">Categoría: {tecnica.categoria}</span>
           </div>
         ))}
         {tecnicasFiltradas.length === 0 && (

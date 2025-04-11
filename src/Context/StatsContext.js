@@ -31,14 +31,24 @@ export const StatsProvider = ({ children }) => {
   const [maxStats, setMaxStats] = useState(() => {
     const savedMaxStats = localStorage.getItem('maxStats');
     return savedMaxStats ? parseFloat(savedMaxStats) : 15;
-  }
-  );
-  
+  });
+
   const [stats, setStats] = useState(() => {
     const savedStats = localStorage.getItem('stats');
     return savedStats ? JSON.parse(savedStats) : { nin: 0.5, tai: 0.5, gen: 0.5, int: 0.5, fue: 0.5, agi: 0.5, est: 0.5, sm: 0.5 };
   });
-    
+
+  const [arma, setArma] = useState(() => {
+    const savedArma = localStorage.getItem('arma');
+    console.log('Cargando arma desde localStorage:', savedArma);
+    // Handle if its NaN or undefined
+    if (savedArma === 'NaN' || savedArma === undefined) {
+      return { nombre: '', daño: 0 };
+    }
+    // Parse the savedArma string to an object
+    return savedArma ? JSON.parse(savedArma) : { nombre: '', daño: 0 };
+  });
+
   const [resultados, setResultados] = useState({});
   const [mensaje, setMensaje] = useState('');
   const [invalido, setInvalido] = useState(false);
@@ -50,6 +60,7 @@ export const StatsProvider = ({ children }) => {
     const savedStats = localStorage.getItem('stats');
     const savedMaxStats = localStorage.getItem('maxStats');
     const savedRango = localStorage.getItem('rango');
+    const savedArma = localStorage.getItem('arma');
 
     if (savedStats) {
       console.log('Cargando stats desde localStorage:', savedStats);
@@ -58,23 +69,29 @@ export const StatsProvider = ({ children }) => {
     if (savedMaxStats) {
       console.log('Cargando maxStats desde localStorage:', savedMaxStats);
       setMaxStats(parseFloat(savedMaxStats));
-    } 
+    }
     if (savedRango) {
       console.log('Cargando rango desde localStorage:', savedRango);
       setRango(savedRango);
-    } 
+    }
+    if (savedArma) {
+      console.log('Cargando arma desde localStorage:', savedArma);
+      // Handle if its NaN or undefined
+      if (savedArma === 'NaN' || savedArma === undefined) {
+        setArma({ nombre: '', daño: 0 });
+      } else {
+        setArma(JSON.parse(savedArma));
+      }
+    }
   }, []);
 
   // Guardar datos en localStorage cuando cambien
   useEffect(() => {
-    console.log('Guardando datos en localStorage...');
-    console.log('Stats:', stats);
-    console.log('Max Stats:', maxStats);
-    console.log('Rango:', rango);
     localStorage.setItem('stats', JSON.stringify(stats));
     localStorage.setItem('maxStats', maxStats);
     localStorage.setItem('rango', rango);
-  }, [stats, maxStats, rango]);
+    localStorage.setItem('arma', JSON.stringify(arma));
+  }, [stats, maxStats, rango, arma]);
 
   const handleMaxStatsChange = (e) => {
     const value = Math.max(15, parseFloat(e.target.value) || 15);
@@ -86,6 +103,10 @@ export const StatsProvider = ({ children }) => {
     setStats((prevStats) => ({ ...prevStats, [id]: parseFloat(value) || 0 }));
   };
 
+  const updateArma = (nombre, daño) => {
+    setArma({ nombre, daño: parseFloat(daño) || 0 });
+  };
+
   const resetStats = () => {
     const defaultStats = {
       nin: 0.5, tai: 0.5, gen: 0.5, int: 0.5, fue: 0.5, agi: 0.5, est: 0.5, sm: 0.5,
@@ -94,9 +115,11 @@ export const StatsProvider = ({ children }) => {
     setMensaje('');
     setInvalido(false);
     setResultados({});
+    setArma({ nombre: '', daño: 0 });
     localStorage.removeItem('stats');
     localStorage.removeItem('maxStats');
     localStorage.removeItem('rango');
+    localStorage.removeItem('arma');
   };
 
   const calcularRango = (total) => {
@@ -174,6 +197,7 @@ export const StatsProvider = ({ children }) => {
         rango,
         maxStats,
         stats,
+        arma,
         resultados,
         mensaje,
         invalido,
@@ -181,11 +205,12 @@ export const StatsProvider = ({ children }) => {
         resultadoHabilidad,
         handleMaxStatsChange,
         handleStatChange,
+        updateArma,
         resetStats,
         calcularHabilidad,
         statsNames,
         limitesPorRango,
-        setHabilidad
+        setHabilidad,
       }}
     >
       {children}
