@@ -28,8 +28,8 @@ const CalculadoraDaños = () => {
     };
 
     return (
-        <div className="bg-white shadow-lg rounded-lg p-6">
-            <h2 className="text-narutoOrange font-righteous text-xl mb-4 text-center">
+        <div className="bg-white shadow-lg rounded-lg p-6 w-full border-2 border-yellow-600">
+            <h2 className="text-narutoOrange font-righteous text-xl mb-4 text-center ">
                 Calculadora Rápida
             </h2>
             <label className="block">

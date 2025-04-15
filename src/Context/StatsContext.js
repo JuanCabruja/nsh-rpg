@@ -41,11 +41,9 @@ export const StatsProvider = ({ children }) => {
   const [arma, setArma] = useState(() => {
     const savedArma = localStorage.getItem('arma');
     console.log('Cargando arma desde localStorage:', savedArma);
-    // Handle if its NaN or undefined
     if (savedArma === 'NaN' || savedArma === undefined) {
       return { nombre: '', daño: 0 };
     }
-    // Parse the savedArma string to an object
     return savedArma ? JSON.parse(savedArma) : { nombre: '', daño: 0 };
   });
 
@@ -76,7 +74,6 @@ export const StatsProvider = ({ children }) => {
     }
     if (savedArma) {
       console.log('Cargando arma desde localStorage:', savedArma);
-      // Handle if its NaN or undefined
       if (savedArma === 'NaN' || savedArma === undefined) {
         setArma({ nombre: '', daño: 0 });
       } else {
@@ -184,6 +181,31 @@ export const StatsProvider = ({ children }) => {
     setResultadoHabilidad(resultado.toFixed(2));
   };
 
+  const descargarFicha = () => {
+    const data = {
+      stats,
+      arma,
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ficha_personaje.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const cargarFicha = (data) => {
+    try {
+      if (data.stats) setStats(data.stats);
+      if (data.arma) updateArma(data.arma.nombre, data.arma.daño);
+      alert('Ficha cargada correctamente.');
+    } catch (error) {
+      console.error('Error al cargar la ficha:', error);
+      alert('El archivo no es válido.');
+    }
+  };
+
   useEffect(() => {
     const valores = Object.values(stats);
     const total = valores.reduce((acc, val) => acc + val, 0);
@@ -207,7 +229,11 @@ export const StatsProvider = ({ children }) => {
         handleStatChange,
         updateArma,
         resetStats,
+        setStats,
+        setMaxStats,
         calcularHabilidad,
+        descargarFicha,
+        cargarFicha,
         statsNames,
         limitesPorRango,
         setHabilidad,
