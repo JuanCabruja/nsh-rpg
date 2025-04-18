@@ -1,33 +1,27 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { StatsContext } from '../Context/StatsContext';
 
 const GestionDeFicha = () => {
-  const { stats, arma, setStats, updateArma } = useContext(StatsContext); // Obtener datos y funciones del contexto
-  const [tecnicas, setTecnicas] = useState([]);
+  const { stats, arma, setStats, updateArma, tecnicas, setTecnicas } = useContext(StatsContext);
 
-  const [nombrePersonaje, setNombrePersonaje] = useState(''); // Estado para el nombre del personaje
-
-  // Cargar técnicas desde localStorage al iniciar
-  useEffect(() => {
-    const savedTecnicas = localStorage.getItem('tecnicas');
-    if (savedTecnicas) {
-      setTecnicas(JSON.parse(savedTecnicas));
-    }
-  }, []);
+  const [nombrePersonaje, setNombrePersonaje] = useState('');
 
   // Descargar los datos como un archivo JSON
   const descargarFicha = () => {
+    const savedStats = JSON.parse(localStorage.getItem('stats') || '{}');
+    const savedArma = JSON.parse(localStorage.getItem('arma') || '[]');
+    const savedTecnicas = JSON.parse(localStorage.getItem('tecnicas') || []);
     const data = {
       nombrePersonaje,
-      stats,
-      arma,
-      tecnicas,
+      savedStats,
+      savedArma,
+      savedTecnicas,
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${nombrePersonaje || 'ficha_personaje'}.json`; // Usar el nombre del personaje o un nombre por defecto
+    a.download = `${nombrePersonaje || 'ficha_personaje'}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -46,7 +40,7 @@ const GestionDeFicha = () => {
         if (data.arma) updateArma(data.arma.nombre, data.arma.daño);
         if (data.tecnicas) {
           setTecnicas(data.tecnicas);
-          localStorage.setItem('tecnicas', JSON.stringify(data.tecnicas)); // Guardar técnicas en localStorage
+          localStorage.setItem('tecnicas', JSON.stringify(data.tecnicas));
         }
         alert('Ficha cargada correctamente.');
       } catch (error) {
@@ -58,39 +52,45 @@ const GestionDeFicha = () => {
   };
 
   return (
-    <div className="bg-white shadow-lg rounded-lg p-6 w-full border-2 border-yellow-600 mt-6">
-      <h2 className="text-narutoOrange font-righteous text-xl mb-4 text-center">
+    <div className="bg-white shadow-lg rounded-lg p-4 w-full border-2 border-yellow-600">
+      <h2 className="text-narutoOrange font-righteous text-lg mb-3 text-center">
         Gestión de Ficha
       </h2>
-      <div className="space-y-4">
+      <div className="space-y-3">
         {/* Campo para el nombre del personaje */}
-        <label className="block">
-          <span className="text-gray-700">Nombre del Personaje:</span>
+        <div className="flex flex-col">
+          <label className="text-sm font-bold text-gray-700 mb-1">
+            Nombre:
+          </label>
           <input
             type="text"
             value={nombrePersonaje}
             onChange={(e) => setNombrePersonaje(e.target.value)}
-            placeholder="Introduce el nombre del personaje"
-            className="w-full border border-gray-300 rounded-md p-2"
+            placeholder="Nombre del personaje"
+            className="border border-gray-300 rounded-md p-1 text-sm"
           />
-        </label>
+        </div>
+
         {/* Botón para descargar la ficha */}
         <button
           onClick={descargarFicha}
-          className="bg-narutoOrange text-white py-2 px-4 rounded-md hover:bg-narutoYellow transition w-full"
+          className="bg-narutoOrange text-white py-1 px-2 rounded-md hover:bg-narutoYellow transition w-full text-sm"
         >
           Descargar Ficha
         </button>
+
         {/* Input para cargar la ficha */}
-        <label className="block">
-          <span className="text-gray-700">Cargar Ficha:</span>
+        <div className="flex flex-col">
+          <label className="text-sm font-bold text-gray-700 mb-1">
+            Cargar Ficha:
+          </label>
           <input
             type="file"
             accept="application/json"
             onChange={cargarFicha}
-            className="w-full border border-gray-300 rounded-md p-2"
+            className="border border-gray-300 rounded-md p-1 text-sm"
           />
-        </label>
+        </div>
       </div>
     </div>
   );
