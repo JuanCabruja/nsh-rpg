@@ -90,10 +90,53 @@ export const StatsProvider = ({ children }) => {
     localStorage.setItem('arma', JSON.stringify(arma));
   }, [stats, maxStats, rango, arma]);
 
-  const handleMaxStatsChange = (e) => {
-    const value = Math.max(15, parseFloat(e.target.value) || 15);
-    setMaxStats(value);
+    // Calcular el daño/defensa basado en la fórmula
+    const calcularDaño = (formula) => {
+      if (!formula) return 'N/A';
+      try {
+        const formulaLowerCase = formula.toLowerCase().replace(/,/g, '.'); // Aseguramos que las variables sean minúsculas
+        const variables = {
+          ...Object.fromEntries(
+            Object.entries(stats).map(([key, value]) => [key, value * 100])
+          ),
+          arma: arma.daño || 0, // Usar el daño del arma desde el contexto global
+        };
+        const resultado = new Function(
+          ...Object.keys(variables),
+          `return ${formulaLowerCase};`
+        )(...Object.values(variables));
+        return resultado.toFixed(2); // Redondear a 2 decimales
+      } catch (error) {
+        console.error('Error al calcular el daño/defensa:', error);
+        return 'Error';
+      }
+    };
+
+  const [permitirExceder, setPermitirExceder] = useState(false); // Nuevo estado
+
+  const handlePermitirExceder = () => {
+    if (permitirExceder) {
+      setMaxStats(35.5); // Cambiar el valor máximo a 35.5 si se permite exceder
+      // if stats are over 5 set them to 5
+      const newStats = { ...stats };
+      Object.keys(newStats).forEach((key) => {
+        if (newStats[key] > 5) {
+          newStats[key] = 5;
+        }
+      });
+      setStats(newStats); // Actualizar los stats si se excede el límite
+      localStorage.setItem('stats', JSON.stringify(newStats)); // Guardar los stats en localStorage
+    } 
+    setPermitirExceder(!permitirExceder); // Alternar el estado
+    localStorage.setItem('permitirExceder', permitirExceder); // Guardar el estado en localStorage
   };
+
+  const handleMaxStatsChange = (e) => {
+    const { value } = e.target;
+    permitirExceder ? setMaxStats(value) : setMaxStats(Math.max(15, parseFloat(e.target.value) || 15));
+    localStorage.setItem('maxStats', value);
+  };
+
 
   const handleStatChange = (e) => {
     const { id, value } = e.target;
@@ -149,7 +192,7 @@ export const StatsProvider = ({ children }) => {
     if (!invalido) {
       const { est, agi, int, fue, sm } = stats;
       const vit = est * 500;
-      const chakra = est * 100;
+      const chakra = est * 100 + sm * 50;
       const velocidad = agi * 2.5;
       const voluntad = int * 5;
 
@@ -166,11 +209,11 @@ export const StatsProvider = ({ children }) => {
       if (int >= 5) percepcion = 3;
       else if (int >= 4) percepcion = 2;
 
-      const consumoChakraReducido = sm * 10;
+
       const objetosExtra = Math.floor(int);
 
       setResultados({
-        vit, chakra, velocidad, resistencia, reflejos, percepcion, voluntad, consumoChakraReducido, objetosExtra,
+        vit, chakra, velocidad, resistencia, reflejos, percepcion, objetosExtra,
       });
     }
   };
@@ -195,16 +238,35 @@ export const StatsProvider = ({ children }) => {
     URL.revokeObjectURL(url);
   };
 
+      // Inicializar técnicas desde localStorage o como un array vacío
+      const [tecnicas, setTecnicas] = useState(() => {
+        const savedTecnicas = localStorage.getItem('tecnicas');
+        try {
+          return savedTecnicas ? JSON.parse(savedTecnicas) : [];
+        } catch (error) {
+          console.error('Error al cargar técnicas desde localStorage:', error);
+          return [];
+        }
+      });
+    
+
+
   const cargarFicha = (data) => {
     try {
       if (data.stats) setStats(data.stats);
       if (data.arma) updateArma(data.arma.nombre, data.arma.daño);
+      if (data.tecnicas) {
+        setTecnicas(data.tecnicas);
+        localStorage.setItem('tecnicas', JSON.stringify(data.tecnicas)); // Guardar técnicas en localStorage
+      }
       alert('Ficha cargada correctamente.');
     } catch (error) {
       console.error('Error al cargar la ficha:', error);
       alert('El archivo no es válido.');
     }
   };
+
+
 
   useEffect(() => {
     const valores = Object.values(stats);
@@ -237,6 +299,12 @@ export const StatsProvider = ({ children }) => {
         statsNames,
         limitesPorRango,
         setHabilidad,
+        setTecnicas,
+        tecnicas,
+        calcularDaño,
+        permitirExceder,
+        setPermitirExceder,
+        handlePermitirExceder
       }}
     >
       {children}

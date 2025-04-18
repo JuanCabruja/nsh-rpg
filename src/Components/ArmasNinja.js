@@ -15,32 +15,42 @@ const ArmasNinja = () => {
       <h2 className="text-narutoOrange font-righteous text-xl mb-4 text-center">
         Arma Ninja Equipada
       </h2>
-      <div className="space-y-4">
+
+      {/* Información del arma actual */}
+      <div className="bg-gray-50 border border-gray-300 rounded-md p-4 mb-4">
+        <p className="text-sm">
+          <strong>Arma actual:</strong> {arma.nombre || 'Ninguna'}
+        </p>
+        <p className="text-sm">
+          <strong>Daño:</strong> {arma.daño || 0}
+        </p>
+      </div>
+
+      {/* Formulario compacto */}
+      <div className="grid grid-cols-2 gap-4">
         <input
           type="text"
           placeholder="Nombre del arma"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
-          className="w-full border border-gray-300 rounded-md p-2"
+          className="border border-gray-300 rounded-md p-2 text-sm"
         />
         <input
           type="number"
           placeholder="Daño del arma"
           value={daño}
           onChange={(e) => setDaño(e.target.value)}
-          className="w-full border border-gray-300 rounded-md p-2"
+          className="border border-gray-300 rounded-md p-2 text-sm"
         />
-        <button
-          onClick={handleGuardar}
-          className="bg-narutoOrange text-white py-2 px-4 rounded-md hover:bg-narutoYellow transition w-full"
-        >
-          Guardar Arma
-        </button>
       </div>
-      <div className="mt-4">
-        <strong>Arma actual:</strong> {arma.nombre || 'Ninguna'} <br />
-        <strong>Daño:</strong> {arma.daño || 0}
-      </div>
+
+      {/* Botón guardar */}
+      <button
+        onClick={handleGuardar}
+        className="bg-narutoOrange text-white py-2 px-4 rounded-md hover:bg-narutoYellow transition w-full mt-4"
+      >
+        Guardar Arma
+      </button>
     </div>
   );
 };
