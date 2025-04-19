@@ -196,7 +196,10 @@ export const StatsProvider = ({ children }) => {
 
     if (!invalido) {
       const { est, agi, int, fue, sm } = stats;
-      const vit = 1250 + ( fue * 250 );
+      const vit = 1250 + ( Math.floor(fue) * 250 );
+
+      // Math floor
+
       const chakra = est * 100 + sm * 50;
       const velocidad = agi + 5;
       const voluntad = int * 5;
