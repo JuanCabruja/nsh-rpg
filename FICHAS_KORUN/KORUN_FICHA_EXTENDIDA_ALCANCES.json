@@ -1,0 +1,149 @@
+{
+  "nombrePersonaje": "KORUN_FICHA",
+  "stats": {
+    "nin": 1,
+    "tai": 2.5,
+    "gen": 0.5,
+    "int": 0.5,
+    "fue": 4,
+    "agi": 3.5,
+    "est": 2,
+    "sm": 0.5
+  },
+  "arma": {
+    "nombre": "",
+    "daño": 0
+  },
+  "tecnicas": [
+    {
+      "nombre": "JUUJI KUMIUCHI (DEFENSA CRUZADA)",
+      "rango": "E",
+      "tipo": "Defensa",
+      "categoria": "Taijutsu",
+      "costoChakra": "0",
+      "calculo": "FUE * 0,4 + TAI * 0,6",
+      "anotaciones": "- Disciplina Kumiuchi.\n- Requiere un brazo.",
+      "resultado": "280.00"
+    },
+    {
+      "nombre": "GYAKU KUMIUCHI (PROYECCIÓN INVERTIDA)",
+      "rango": "E",
+      "tipo": "Anticipación",
+      "categoria": "Taijutsu",
+      "costoChakra": "0",
+      "calculo": "FUE * 0,40 + TAI * 0,60",
+      "anotaciones": "Técnica que utiliza el impulso del oponente para levantarlo y proyectarlo al suelo.\n\n- Disciplina Kumiuchi.\n- Requiere un brazo.\n- Un uso cada 4 rondas.",
+      "resultado": "280.00"
+    },
+    {
+      "nombre": "GYAKU NAGE (DERRIBO EXTERNO)",
+      "rango": "E",
+      "tipo": "Anticipación",
+      "categoria": "Taijutsu",
+      "costoChakra": "0",
+      "calculo": "FUE * 0,40 + TAI * 0,60",
+      "anotaciones": "Gran Derribo Exterior. Técnica de barrido que desestabiliza al oponente desde el exterior.\n\nDerriba al oponente.\n\nAclaraciones - Cooldown:\n- Disciplina Kumiuchi.\n- Requiere un brazo.\n- Un uso cada 4 rondas.",
+      "resultado": "280.00"
+    },
+    {
+      "nombre": "SHINKEN HIJIUCHI – CODAZO REAL",
+      "rango": "E",
+      "tipo": "Ofensivo",
+      "categoria": "Taijutsu",
+      "costoChakra": "0",
+      "calculo": "FUE * 0,4 + TAI * 0,6",
+      "anotaciones": "Si el usuario posee 4.5 en FUE entonces podrá empujar 2 casillas y desorientar 2 acciones al oponente\nAclaraciones - Cooldown:\n- Requiere un brazo",
+      "resultado": "280.00"
+    },
+    {
+      "nombre": "FUDO MATA – PROYECCIÓN INTERNA",
+      "rango": "E",
+      "tipo": "Anticipación",
+      "categoria": "Taijutsu",
+      "costoChakra": "0",
+      "calculo": "FUE * 0,40 + TAI * 0,60",
+      "anotaciones": " Derriba al oponente\nAclaraciones - Cooldown:\n- Requiere un brazo.\n- Un uso cada 4 rondas.\n- Solo se puede anticipar hasta habilidades rango B",
+      "resultado": "280.00"
+    },
+    {
+      "nombre": "KENTO UCHI – IMPACTO CON PUÑO",
+      "rango": "E",
+      "tipo": "Ofensivo",
+      "categoria": "Taijutsu",
+      "costoChakra": "0",
+      "calculo": "FUE * 0,40 + TAI * 0,60",
+      "anotaciones": "Golpe directo y rápido con la base del puño, ideal para romper guardias.\nEfectos:\n Si el usuario posee 4.5 en FUE podrá empujar 2 casillas y desorientar 2 acciones al\noponente\nAclaraciones - Cooldown:\n- Requiere un brazo.\nUn uso cada 3 rondas.",
+      "resultado": "280.00"
+    },
+    {
+      "nombre": "ERUBOU - CODAZO",
+      "rango": "B",
+      "tipo": "Ofensivo / Anticipación",
+      "categoria": "Taijutsu / Nintaijutsu",
+      "costoChakra": "35",
+      "calculo": "NIN * 0.4 + TAI * 0.4 + AGI * 0.55",
+      "anotaciones": "[Alcance: Alcance 6 (modo ofensivo), Alcance 3 (modo anticipación).]\n- Aturde 1 acción. Desorienta 2 acciones. Empuja 3 casillas.\n- Requiere 2 REF para reaccionar.\n- Alcance 6 (modo ofensivo), alcance 3 (modo anticipación).\n- Modo anticipación: +15CH, requiere 3 REF.\n- Si REF del usuario > 3, se usa esa REF como requisito.\n- Mitad de casillas si se usa Raiton Chakra Mōdo.\n- Requiere un brazo.",
+      "resultado": "calculado dinámicamente"
+    },
+    {
+      "nombre": "SENTOU UWA-IRI - BRAZALETES DE COMBATE",
+      "rango": "A",
+      "tipo": "Objeto",
+      "categoria": "Cuerpo a Cuerpo",
+      "costoChakra": "0",
+      "calculo": "(NIN*1)",
+      "anotaciones": "[Alcance: No aplica.]\n- Da +0.5 FUE y -0.5 AGI (anulado si se tiene 4 FUE).\n- Con 4.5 FUE no necesita equiparse.\n- Permite añadir 1 turno de aturdimiento a Taijutsu de manos (*Sentou). Una vez cada 2 rondas.\n- Equipar consume acción; desequipar no.\n- Daño base medio.",
+      "resultado": "efecto de objeto"
+    },
+    {
+      "nombre": "RAITON CHAKURA MOUDO",
+      "rango": "A",
+      "tipo": "Suplementario",
+      "categoria": "Ninjutsu",
+      "costoChakra": "30",
+      "calculo": "(NIN*1)",
+      "anotaciones": "[Alcance: Propio.]\n+1 FUE, +1 AGI, +1 REF y defensa pasiva = (EST + FUE) * 5.\n- Inmune parcial a efectos de parálisis o inmovilización.\n- Técnicas pasan a ser Raiton.\n- Gana AGI//2 casillas extra por ronda.\n- Con 5 NIN: +1.5 FUE, AGI, REF y defensa = (EST+FUE)*10.\n- Con 5 TAI y NIN: +2 REF y AGI.\n- Fuuton desactiva la armadura 2 rondas.\n- Se considera uso activo de chakra.",
+      "resultado": "modificador de estado"
+    },
+    {
+      "nombre": "DOROPPU KIKKU - PATADA DESCENDENTE",
+      "rango": "B",
+      "tipo": "Ofensivo",
+      "categoria": "Taijutsu / Nintaijutsu",
+      "costoChakra": "25",
+      "calculo": "NIN * 0.4 + TAI * 0.4 + AGI * 0.5",
+      "anotaciones": "[Alcance: Alcance 4.]\n- Empuja FUE casillas. Derriba si supera en 1 FUE.\n- Requiere 2 REF. Alcance 4.\n- Mitad de casillas desplazadas si VEL lo permite.\n- Se puede usar como irrupción de combate.\n- Requiere una pierna.",
+      "resultado": "calculado dinámicamente"
+    },
+    {
+      "nombre": "RAIGYAKU SUIHEI - RAYO DE OPRESIÓN HORIZONTAL",
+      "rango": "B",
+      "tipo": "Ofensivo",
+      "categoria": "Taijutsu / Nintaijutsu",
+      "costoChakra": "45",
+      "calculo": "NIN * 0.4 + TAI * 0.4 + FUE * 0.65",
+      "anotaciones": "[Alcance: Alcance 2.]\n- Aturde 1 acción. Reduce defensas hasta B un 20%.\n- Provoca terreno destruido en área FUE/2.\n- Si tiene 4.5 TAI y FUE: reduce defensas hasta A un 25%.\n- Requiere 3 REF. Requiere un brazo.",
+      "resultado": "calculado dinámicamente"
+    },
+    {
+      "nombre": "RAIGÃ BOMU - BOMBA LIGERA",
+      "rango": "B",
+      "tipo": "Ofensivo / Anticipación",
+      "categoria": "Taijutsu / Nintaijutsu",
+      "costoChakra": "50",
+      "calculo": "NIN * 0.4 + TAI * 0.4 + FUE * 0.85",
+      "anotaciones": "[Alcance: Alcance 1.]\n- Aturde y desorienta FUE/2 acciones. Ignora 20% de defensas hasta Rango A.\n- Terreno destruido 3 acciones en área FUE/2.\n- Anticipación una vez cada 5 rondas.\n- Con 4.5 AGI: requiere 4 PER para anticipación.\n- Con 5 AGI: requiere 5 PER para anticipación.\n- Requiere ambos brazos.",
+      "resultado": "calculado dinámicamente"
+    },
+    {
+      "nombre": "GURICHIN DOROPPU - GUILLOTINE DROP",
+      "rango": "B",
+      "tipo": "Ofensivo",
+      "categoria": "Taijutsu / Nintaijutsu",
+      "costoChakra": "70",
+      "calculo": "NIN * 0.4 + TAI * 0.4 + FUE * 0.95",
+      "anotaciones": "[Alcance: Alcance 1.]\n- Aturde y desorienta FUE/2 acciones. Atraviesa defensas B y A.\n- Si no las atraviesa, ignora 50%.\n- Derriba por 3 acciones. Alcance 1 (afecta enemigos elevados).\n- Con 4.5 NIN: daña toda el área destruida si se aplica ahí.\n- Requiere una pierna.",
+      "resultado": "calculado dinámicamente"
+    }
+  ]
+}

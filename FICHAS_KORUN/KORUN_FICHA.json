@@ -1,0 +1,79 @@
+{
+  "nombrePersonaje": "KORUN_FICHA",
+  "savedStats": {
+    "nin": 1,
+    "tai": 2.5,
+    "gen": 0.5,
+    "int": 0.5,
+    "fue": 4,
+    "agi": 3.5,
+    "est": 2,
+    "sm": 0.5
+  },
+  "savedArma": {
+    "nombre": "",
+    "daño": 0
+  },
+  "savedTecnicas": [
+    {
+      "nombre": "JUUJI KUMIUCHI (DEFENSA CRUZADA)",
+      "rango": "E",
+      "tipo": "Defensa",
+      "categoria": "Taijutsu",
+      "costoChakra": "0",
+      "calculo": "FUE * 0,4 + TAI * 0,6",
+      "anotaciones": "- Disciplina Kumiuchi.\n- Requiere un brazo.",
+      "resultado": "280.00"
+    },
+    {
+      "nombre": "GYAKU KUMIUCHI (PROYECCIÓN INVERTIDA)",
+      "rango": "E",
+      "tipo": "Anticipación",
+      "categoria": "Taijutsu",
+      "costoChakra": "0",
+      "calculo": "FUE * 0,40 + TAI * 0,60",
+      "anotaciones": "Técnica que utiliza el impulso del oponente para levantarlo y proyectarlo al suelo.\n\n- Disciplina Kumiuchi.\n- Requiere un brazo.\n- Un uso cada 4 rondas.",
+      "resultado": "280.00"
+    },
+    {
+      "nombre": "GYAKU NAGE (DERRIBO EXTERNO)",
+      "rango": "E",
+      "tipo": "Anticipación",
+      "categoria": "Taijutsu",
+      "costoChakra": "0",
+      "calculo": "FUE * 0,40 + TAI * 0,60",
+      "anotaciones": "Gran Derribo Exterior. Técnica de barrido que desestabiliza al oponente desde el exterior.\n\nDerriba al oponente.\n\nAclaraciones - Cooldown:\n- Disciplina Kumiuchi.\n- Requiere un brazo.\n- Un uso cada 4 rondas.",
+      "resultado": "280.00"
+    },
+    {
+      "nombre": "SHINKEN HIJIUCHI – CODAZO REAL",
+      "rango": "E",
+      "tipo": "Ofensivo",
+      "categoria": "Taijutsu",
+      "costoChakra": "0",
+      "calculo": "FUE * 0,4 + TAI * 0,6",
+      "anotaciones": "Si el usuario posee 4.5 en FUE entonces podrá empujar 2 casillas y desorientar 2 acciones al oponente\nAclaraciones - Cooldown:\n- Requiere un brazo",
+      "resultado": "280.00"
+    },
+    {
+      "nombre": "FUDO MATA – PROYECCIÓN INTERNA",
+      "rango": "E",
+      "tipo": "Anticipación",
+      "categoria": "Taijutsu",
+      "costoChakra": "0",
+      "calculo": "FUE * 0,40 + TAI * 0,60",
+      "anotaciones": " Derriba al oponente\nAclaraciones - Cooldown:\n- Requiere un brazo.\n- Un uso cada 4 rondas.\n- Solo se puede anticipar hasta habilidades rango B",
+      "resultado": "280.00"
+    },
+    {
+      "nombre": "KENTO UCHI – IMPACTO CON PUÑO",
+      "rango": "E",
+      "tipo": "Ofensivo",
+      "categoria": "Taijutsu",
+      "costoChakra": "0",
+      "calculo": "FUE * 0,40 + TAI * 0,60",
+      "anotaciones": "Golpe directo y rápido con la base del puño, ideal para romper guardias.\nEfectos:\n Si el usuario posee 4.5 en FUE podrá empujar 2 casillas y desorientar 2 acciones al\noponente\nAclaraciones - Cooldown:\n- Requiere un brazo.\nUn uso cada 3 rondas.",
+      "resultado": "280.00"
+    }
+  ]
+}

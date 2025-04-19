@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { StatsContext } from '../Context/StatsContext';
 
 const GestorDeTecnicas = () => {
-  const { stats, arma, tecnicas, setTecnicas, calcularDaño} = useContext(StatsContext);
+  const { stats, arma, tecnicas, setTecnicas, calcularDaño } = useContext(StatsContext);
 
   const [nuevaTecnica, setNuevaTecnica] = useState({
     nombre: '',
@@ -30,18 +30,54 @@ const GestorDeTecnicas = () => {
     }));
   };
 
-    // Recalcular los daños automáticamente cuando cambien los stats o el valor de ARMA
-    useEffect(() => {
-      if (Array.isArray(tecnicas)) {
-        const tecnicasActualizadas = tecnicas.map((tecnica) => ({
-          ...tecnica,
-          resultado: calcularDaño(tecnica.calculo), // Recalcular el daño/defensa
-        }));
-        setTecnicas(tecnicasActualizadas);
-      }
-    }, [stats, arma]); // Ejecutar cuando los stats o ARMA cambien
-  
-  
+  // Recalcular los daños automáticamente cuando cambien los stats o el valor de ARMA
+  useEffect(() => {
+    if (Array.isArray(tecnicas)) {
+      const tecnicasActualizadas = tecnicas.map((tecnica) => ({
+        ...tecnica,
+        resultado: calcularDaño(tecnica.calculo), // Recalcular el daño/defensa
+      }));
+      setTecnicas(tecnicasActualizadas);
+      localStorage.setItem('tecnicas', JSON.stringify(tecnicasActualizadas)); // Sincronizar con localStorage
+    }
+  }, [stats, arma]); // Ejecutar cuando los stats o ARMA cambien
+
+  // Manejar la eliminación de una técnica
+  const handleEliminarTecnica = (index) => {
+    const tecnicasActualizadas = tecnicas.filter((_, i) => i !== index);
+    setTecnicas(tecnicasActualizadas); // Actualizar el estado
+    localStorage.setItem('tecnicas', JSON.stringify(tecnicasActualizadas)); // Sincronizar con localStorage
+  };
+
+  const agregarTecnica = () => {
+    if (!nuevaTecnica.nombre || !nuevaTecnica.rango || !nuevaTecnica.tipo) {
+      alert('Por favor, completa los campos obligatorios (Nombre, Rango, Tipo).');
+      return;
+    }
+
+    // Calcular el daño de la técnica antes de agregarla
+    const resultado = calcularDaño(nuevaTecnica.calculo);
+
+    const tecnicaConResultado = {
+      ...nuevaTecnica,
+      resultado, // Agregar el resultado del cálculo
+    };
+
+    const tecnicasActualizadas = [...tecnicas, tecnicaConResultado];
+    setTecnicas(tecnicasActualizadas); // Actualizar el estado
+    localStorage.setItem('tecnicas', JSON.stringify(tecnicasActualizadas)); // Sincronizar con localStorage
+
+    // Resetear el formulario
+    setNuevaTecnica({
+      nombre: '',
+      rango: '',
+      tipo: '',
+      categoria: '',
+      costoChakra: '',
+      calculo: '',
+      anotaciones: '',
+    });
+  };
 
   const tecnicasFiltradas = tecnicas.filter((tecnica) => {
     return (
@@ -119,22 +155,7 @@ const GestorDeTecnicas = () => {
           className="w-full border border-gray-300 rounded-md p-2 text-sm mt-4"
         />
         <button
-          onClick={() => {
-            if (!nuevaTecnica.nombre || !nuevaTecnica.rango || !nuevaTecnica.tipo) {
-              alert('Por favor, completa los campos obligatorios (Nombre, Rango, Tipo).');
-              return;
-            }
-            setTecnicas((prev) => [...prev, nuevaTecnica]);
-            setNuevaTecnica({
-              nombre: '',
-              rango: '',
-              tipo: '',
-              categoria: '',
-              costoChakra: '',
-              calculo: '',
-              anotaciones: '',
-            });
-          }}
+          onClick={agregarTecnica}
           className="bg-narutoOrange text-white py-2 px-4 rounded-md hover:bg-narutoYellow transition w-full mt-4"
         >
           Agregar Técnica
@@ -147,56 +168,11 @@ const GestorDeTecnicas = () => {
           <table className="w-full text-sm border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 p-2">
-                  <input
-                    type="text"
-                    name="nombre"
-                    placeholder="Filtrar por Nombre"
-                    value={filtros.nombre}
-                    onChange={handleFiltroChange}
-                    className="w-full border border-gray-300 rounded-md p-1 text-xs"
-                  />
-                </th>
-                <th className="border border-gray-300 p-2">
-                  <input
-                    type="text"
-                    name="rango"
-                    placeholder="Filtrar por Rango"
-                    value={filtros.rango}
-                    onChange={handleFiltroChange}
-                    className="w-full border border-gray-300 rounded-md p-1 text-xs"
-                  />
-                </th>
-                <th className="border border-gray-300 p-2">
-                  <input
-                    type="text"
-                    name="tipo"
-                    placeholder="Filtrar por Tipo"
-                    value={filtros.tipo}
-                    onChange={handleFiltroChange}
-                    className="w-full border border-gray-300 rounded-md p-1 text-xs"
-                  />
-                </th>
-                <th className="border border-gray-300 p-2">
-                  <input
-                    type="text"
-                    name="categoria"
-                    placeholder="Filtrar por Categoría"
-                    value={filtros.categoria}
-                    onChange={handleFiltroChange}
-                    className="w-full border border-gray-300 rounded-md p-1 text-xs"
-                  />
-                </th>
-                <th className="border border-gray-300 p-2">
-                  <input
-                    type="text"
-                    name="costoChakra"
-                    placeholder="Filtrar por Chakra"
-                    value={filtros.costoChakra}
-                    onChange={handleFiltroChange}
-                    className="w-full border border-gray-300 rounded-md p-1 text-xs"
-                  />
-                </th>
+                <th className="border border-gray-300 p-2">Nombre</th>
+                <th className="border border-gray-300 p-2">Rango</th>
+                <th className="border border-gray-300 p-2">Tipo</th>
+                <th className="border border-gray-300 p-2">Categoría</th>
+                <th className="border border-gray-300 p-2">Costo Chakra</th>
                 <th className="border border-gray-300 p-2">Resultado</th>
                 <th className="border border-gray-300 p-2">Anotaciones</th>
                 <th className="border border-gray-300 p-2">Acciones</th>
@@ -214,7 +190,7 @@ const GestorDeTecnicas = () => {
                   <td className="border border-gray-300 p-2">{tecnica.anotaciones}</td>
                   <td className="border border-gray-300 p-2">
                     <button
-                      onClick={() => setTecnicas((prev) => prev.filter((_, i) => i !== index))}
+                      onClick={() => handleEliminarTecnica(index)}
                       className="bg-red-500 text-white py-1 px-2 rounded-md hover:bg-red-600 transition text-xs"
                     >
                       Eliminar
