@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { StatsContext } from '../Context/StatsContext';
 
 const CalculadoraDeStats = () => {
@@ -11,10 +11,8 @@ const CalculadoraDeStats = () => {
     handleStatChange,
     resetStats,
     permitirExceder,
-    handlePermitirExceder
+    handlePermitirExceder,
   } = useContext(StatsContext);
-
-
 
   const limitesPorRango = {
     'D': { maxStats: 15, maxStatValue: 4, maxStaminaValue: 3 },
@@ -66,10 +64,13 @@ const CalculadoraDeStats = () => {
               id={stat}
               step="0.5"
               min="0.5"
-              max={permitirExceder ? 100 
-                                   : stat === 'est' ? limitesPorRango[rango].maxStaminaValue
-                                                    : limitesPorRango[rango].maxStatValue
-                                  } // Permitir exceder el límite
+              max={
+                permitirExceder
+                  ? 100
+                  : stat === 'est'
+                  ? limitesPorRango[rango].maxStaminaValue
+                  : limitesPorRango[rango].maxStatValue
+              } // Permitir exceder el límite
               value={stats[stat]}
               onChange={handleStatChange}
               className="w-full border border-gray-300 rounded-md p-2 text-sm"
@@ -93,23 +94,23 @@ const CalculadoraDeStats = () => {
         {mensaje && <p className="text-red-500 font-bold">{mensaje}</p>}
       </div>
 
-      {/* Botones */}
-      <div className="mt-4 flex flex-col gap-2">
+      {/* Botones compactos */}
+      <div className="mt-4 flex gap-2">
         <button
           onClick={resetStats}
-          className="bg-narutoOrange text-white py-2 px-4 rounded-md hover:bg-narutoYellow transition w-full"
+          className="bg-narutoOrange text-white py-1 px-2 rounded-md hover:bg-narutoYellow transition w-1/2 text-sm"
         >
-          Resetear Stats
+          Resetear
         </button>
         <button
-          onClick={() => handlePermitirExceder()} // Alternar exceder límite
-          className={`py-2 px-4 rounded-md transition w-full ${
+          onClick={handlePermitirExceder} // Alternar exceder límite
+          className={`py-1 px-2 rounded-md transition w-1/2 text-sm ${
             permitirExceder
               ? 'bg-red-500 text-white hover:bg-red-600'
               : 'bg-green-500 text-white hover:bg-green-600'
           }`}
         >
-          {permitirExceder ? 'Desactivar Exceder Límite' : 'Permitir Exceder Límite'}
+          {permitirExceder ? 'Desactivar Límite' : 'Permitir Límite'}
         </button>
       </div>
     </div>

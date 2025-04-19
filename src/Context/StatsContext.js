@@ -116,7 +116,9 @@ export const StatsProvider = ({ children }) => {
 
   const handlePermitirExceder = () => {
     if (permitirExceder) {
-      setMaxStats(35.5); // Cambiar el valor máximo a 35.5 si se permite exceder
+      if (maxStats > 35.5) {
+        setMaxStats(35.5); // Cambiar el valor máximo a 15 si no se permite exceder
+      }
       // if stats are over 5 set them to 5
       const newStats = { ...stats };
       Object.keys(newStats).forEach((key) => {
@@ -181,10 +183,13 @@ export const StatsProvider = ({ children }) => {
       invalido = true;
     }
 
-    if (total > maxStats) {
+    if (total > maxStats && !permitirExceder) {
       mensaje += `⚠️ Has excedido el total de stats disponibles (${maxStats}).\n`;
       invalido = true;
+    } else if (permitirExceder && total > maxStats) {
+      mensaje += `Total de stats por encima de tus stats disponibles ${total - maxStats}.\n`;
     }
+
 
     setMensaje(mensaje);
     setInvalido(invalido);
