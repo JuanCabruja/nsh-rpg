@@ -110,7 +110,7 @@ const CalculadoraDeStats = () => {
               : 'bg-green-500 text-white hover:bg-green-600'
           }`}
         >
-          {permitirExceder ? 'Desactivar Límite' : 'Permitir Límite'}
+          {permitirExceder ? 'Activar Límites' : 'Desactivar Límites'}
         </button>
       </div>
     </div>

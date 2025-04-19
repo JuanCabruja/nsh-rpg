@@ -108,7 +108,7 @@ export const StatsProvider = ({ children }) => {
         return resultado.toFixed(2); // Redondear a 2 decimales
       } catch (error) {
         console.error('Error al calcular el daño/defensa:', error);
-        return 'Error';
+        return 'N/A'; // Retornar 'N/A' en caso de error
       }
     };
 
@@ -196,23 +196,23 @@ export const StatsProvider = ({ children }) => {
 
     if (!invalido) {
       const { est, agi, int, fue, sm } = stats;
-      const vit = est * 500;
+      const vit = 1250 + ( fue * 250 );
       const chakra = est * 100 + sm * 50;
-      const velocidad = agi * 2.5;
+      const velocidad = agi + 5;
       const voluntad = int * 5;
 
       let resistencia = 0;
-      if (fue >= 5) resistencia = 25;
-      else if (fue >= 4.5) resistencia = 20;
+      if (fue >= 5) resistencia = 20;
+      else if (fue >= 4.5) resistencia = 15;
       else if (fue >= 4) resistencia = 10;
 
       let reflejos = 1;
       if (agi >= 5) reflejos = 3;
-      else if (agi >= 4) reflejos = 2;
+      else if (agi >= 3) reflejos = 2;
 
       let percepcion = 1;
       if (int >= 5) percepcion = 3;
-      else if (int >= 4) percepcion = 2;
+      else if (int >= 3) percepcion = 2;
 
 
       const objetosExtra = Math.floor(int);

@@ -89,9 +89,9 @@
       "nombre": "SENTOU UWA-IRI - BRAZALETES DE COMBATE",
       "rango": "A",
       "tipo": "Objeto",
-      "categoria": "Cuerpo a Cuerpo",
+      "categoria": "Objeto",
       "costoChakra": "0",
-      "calculo": "(NIN*1)",
+      "calculo": "TAI * 0",
       "anotaciones": "[Alcance: No aplica.]\n- Da +0.5 FUE y -0.5 AGI (anulado si se tiene 4 FUE).\n- Con 4.5 FUE no necesita equiparse.\n- Permite añadir 1 turno de aturdimiento a Taijutsu de manos (*Sentou). Una vez cada 2 rondas.\n- Equipar consume acción; desequipar no.\n- Daño base medio.",
       "resultado": "efecto de objeto"
     },
@@ -101,7 +101,7 @@
       "tipo": "Suplementario",
       "categoria": "Ninjutsu",
       "costoChakra": "30",
-      "calculo": "(NIN*1)",
+      "calculo": "TAI * 0",
       "anotaciones": "[Alcance: Propio.]\n+1 FUE, +1 AGI, +1 REF y defensa pasiva = (EST + FUE) * 5.\n- Inmune parcial a efectos de parálisis o inmovilización.\n- Técnicas pasan a ser Raiton.\n- Gana AGI//2 casillas extra por ronda.\n- Con 5 NIN: +1.5 FUE, AGI, REF y defensa = (EST+FUE)*10.\n- Con 5 TAI y NIN: +2 REF y AGI.\n- Fuuton desactiva la armadura 2 rondas.\n- Se considera uso activo de chakra.",
       "resultado": "modificador de estado"
     },
