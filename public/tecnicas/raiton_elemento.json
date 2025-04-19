@@ -1,0 +1,145 @@
+{
+  "elemento": "Raiton",
+  "descripcion": "El Elemento Raiton es una de las cinco transformaciones principales de la naturaleza del chakra en el mundo shinobi. Se caracteriza por su velocidad, precisión y capacidad de paralizar.",
+  "caracteristicas": {
+    "naturalezaChakra": "Electricidad",
+    "estiloCombate": "Ataques veloces y precisos, efectivos en cuerpo a cuerpo y a distancia.",
+    "ventajaEstrategica": "Interrupción de movimientos, inutilización de armas, combinación con elementos conductores.",
+    "afinidad": {
+      "fuerteContra": "Doton",
+      "debilContra": "Fuuton"
+    }
+  },
+  "jutsus": [
+    {
+      "nombre": "Raikyuu - Esfera Relámpago",
+      "tipo": [
+        "Ninjutsu",
+        "Raiton"
+      ],
+      "rango": "C",
+      "categoria": "Combo",
+      "sellos": true,
+      "alcance": 4,
+      "costoChakra": 45,
+      "requisitos": {
+        "NIN": 3
+      },
+      "efectos": [
+        "Combo de 2 ataques: daño = NIN * 1.15",
+        "Paraliza al oponente 1 acción",
+        "Reduce -10% defensas internas hasta Rango B",
+        "Segundo ataque puede ir a otro objetivo"
+      ],
+      "mejora": {
+        "condicion": "NIN >= 4.5",
+        "efecto": "Primer ataque requiere 3 REF"
+      }
+    },
+    {
+      "nombre": "Raiton Raihazan - Tajo Relámpago",
+      "tipo": [
+        "Ninjutsu",
+        "Raiton"
+      ],
+      "rango": "C",
+      "categoria": "Anticipación",
+      "sellos": false,
+      "alcance": 2,
+      "costoChakra": 50,
+      "requisitos": {
+        "NIN": 2.5
+      },
+      "efectos": [
+        "Daño = NIN * 1.20",
+        "Paraliza al oponente 1 acción"
+      ],
+      "mejora": {
+        "condicion": "NIN >= 4.5",
+        "efecto": "Anticipación requiere 3 REF"
+      },
+      "aclaraciones": "Un uso cada 3 rondas"
+    },
+    {
+      "nombre": "Raiton Ikazuchi Unagi - Anguila Relámpago",
+      "tipo": [
+        "Ninjutsu",
+        "Raiton"
+      ],
+      "rango": "C",
+      "categoria": "Ofensivo",
+      "sellos": true,
+      "alcance": "Área 1 sobre el usuario",
+      "costoChakra": 40,
+      "requisitos": {
+        "NIN": 3
+      },
+      "efectos": [
+        "Daño = NIN * 1.40",
+        "Paraliza 1 acción",
+        "Área de efecto aumenta en terreno húmedo/inundado"
+      ],
+      "contraataque": {
+        "habilidades": "Alcance 1",
+        "uso": "1 cada 3 rondas"
+      },
+      "mejora": {
+        "condicion": "NIN >= 4.5",
+        "efecto": "Área 2, sin necesidad de terreno, 2 REF, daño = NIN * 1.50"
+      }
+    },
+    {
+      "nombre": "Raiton Jibashi - Asesinato Electromagnético",
+      "tipo": [
+        "Ninjutsu",
+        "Raiton"
+      ],
+      "rango": "C",
+      "categoria": "Ofensivo",
+      "sellos": true,
+      "alcance": "3 y Área 1 sobre el oponente",
+      "costoChakra": 50,
+      "requisitos": {
+        "NIN": 3
+      },
+      "efectos": [
+        "Daño = NIN * 1.30",
+        "Paraliza 1 acción",
+        "Paraliza 2 acciones si el oponente está mojado",
+        "Reduce -15% defensas internas hasta rango B"
+      ],
+      "mejora": {
+        "condicion": "NIN >= 4.5",
+        "efecto": "Paraliza 2 acciones sin condición, daño = NIN * 1.35, reducción = -20%"
+      }
+    },
+    {
+      "nombre": "Raiton Ikazuchi no Utage - Funeral de Rayo: Banquete de Rayos",
+      "tipo": [
+        "Ninjutsu",
+        "Raiton"
+      ],
+      "rango": "B",
+      "categoria": "Ofensivo",
+      "sellos": true,
+      "alcance": 4,
+      "costoChakra": 55,
+      "requisitos": {
+        "NIN": 3.5
+      },
+      "efectos": [
+        "Daño = NIN * 1.65",
+        "Paraliza 2 acciones",
+        "Alcance 6 si el terreno está mojado/inundado/lloviendo"
+      ],
+      "mejora": {
+        "condicion": "NIN >= 4.5",
+        "efecto": "Alcance 6 sin condiciones, daño = NIN * 1.75, quita -1 Shintai adicional"
+      },
+      "aclaraciones": [
+        "2 REF para reaccionar si NIN >= 4.5",
+        "Si se usa arma de filo, no requiere sellos"
+      ]
+    }
+  ]
+}

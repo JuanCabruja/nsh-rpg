@@ -1,0 +1,53 @@
+[
+  {
+    "nombre": "KIRI",
+    "rango": "E",
+    "tipo": "Ofensivo",
+    "disciplina": "Kenjutsu",
+    "alcance": 1,
+    "elemento": "No-Elemental",
+    "costo_ch": 0,
+    "descripcion": "Corte rápido. Este ataque se basa en la velocidad y precisión para herir al oponente antes de que pueda reaccionar.",
+    "informacion": ["Daña"],
+    "efectos": "ARMA * 0.4 + AGI * 0.3 + TAI * 0.3",
+    "cooldown": null,
+    "condiciones": [
+      "Disciplina Tantoujutsu",
+      "Requiere que el Arma de Filo se encuentre empuñada"
+    ]
+  },
+  {
+    "nombre": "KIRI UKE",
+    "rango": "E",
+    "tipo": "Defensivo",
+    "disciplina": "Kenjutsu",
+    "alcance": "Propio",
+    "elemento": "No-Elemental",
+    "costo_ch": 0,
+    "descripcion": "Defensa activa que bloquea el ataque del oponente y realiza un pequeño corte o desvío para interrumpir su arma.",
+    "informacion": ["Defiende"],
+    "efectos": "ARMA * 0.4 + AGI * 0.3 + TAI * 0.3",
+    "cooldown": null,
+    "condiciones": [
+      "Disciplina Tantoujutsu",
+      "Requiere que el Arma de Filo se encuentre empuñada"
+    ]
+  },
+  {
+    "nombre": "TACHI UGI",
+    "rango": "E",
+    "tipo": "Defensivo/Contraataque",
+    "disciplina": "Kenjutsu",
+    "alcance": 1,
+    "elemento": "No-Elemental",
+    "costo_ch": 0,
+    "descripcion": "Contraataque rápido y sorpresivo desde posición erguida, diseñado para neutralizar al oponente en combate cercano.",
+    "informacion": ["Daña"],
+    "efectos": "ARMA * 0.4 + AGI * 0.3 + TAI * 0.3",
+    "cooldown": "Un uso cada 3 rondas",
+    "condiciones": [
+      "Disciplina Tantoujutsu",
+      "Requiere que el Arma de Filo se encuentre empuñada"
+    ]
+  }
+]

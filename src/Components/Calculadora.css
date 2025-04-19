@@ -2,148 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Fuente estilo Naruto */
-@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
-/* Fondo con textura y color */
+/* Fondo estilo pergamino */
 body {
-    background-color: #f4e2c3; /* Color claro */
-    background-image: url('/fondo/cream-paper.png'); /* Textura de papel */
-    background-size: cover;
-    background-blend-mode: multiply;
-    color: #212121; /* Texto oscuro */
-  }
-  
-  /* Contenedores */
-  .container {
-    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-  }
-/* Lista de estadísticas sin puntos */
-.stats-list {
-    font-size: 16px;
-    line-height: 1.8;
-    color: #2c3e50;
-}
-
-.stats-list div {
-    margin-bottom: 5px;
+  background-color: #f4e2c3; /* Color claro */
+  background-image: url('/fondo/cream-paper.png'); /* Textura de papel */
+  background-size: cover;
+  background-blend-mode: multiply;
+  color: #212121; /* Texto oscuro */
 }
 
 /* Contenedor principal */
-.calculadora-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center; /* Centra los divs horizontalmente */
-    align-items: flex-start; /* Alinea los divs al inicio verticalmente */
-    padding: 20px;
-    width: 100%;
-    max-width: 1200px;
+.container {
+  background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
+  border: 2px solid #d4a373; /* Borde tipo pergamino */
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
 }
 
-/* Estilo del div de resultados finales */
-.resultados-finales {
-    flex: 1;
-    min-width: 300px;
-    padding: 20px;
-    border: 2px solid #d4a373; /* Borde tipo pergamino */
-    border-radius: 12px;
-    background-color: #fff8e7; /* Fondo claro */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    font-family: 'Verdana', sans-serif;
-    height: fit-content;
+/* Colores de los stats */
+.stat-vitalidad {
+  color: #28a745; /* Verde */
 }
 
-/* Estilo del div de la calculadora de stats */
-.calculadora-container {
-    flex: 2;
-    min-width: 300px;
-    padding: 20px;
-    border: 2px solid #d4a373; /* Borde tipo pergamino */
-    border-radius: 12px;
-    background-color: #fff8e7; /* Fondo claro */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    font-family: 'Verdana', sans-serif;
+.stat-chakra {
+  color: #007bff; /* Azul */
 }
 
-/* Estilo del div de la calculadora de habilidades */
-.calculadora-habilidades {
-    flex: 1;
-    min-width: 300px;
-    padding: 20px;
-    border: 2px solid #d4a373; /* Borde tipo pergamino */
-    border-radius: 12px;
-    background-color: #fff8e7; /* Fondo claro */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    font-family: 'Verdana', sans-serif;
-    height: fit-content;
+.stat-velocidad {
+  color: #ffc107; /* Amarillo */
 }
 
-/* Títulos */
-.resultados-finales h2, .calculadora-container h1, .calculadora-habilidades h2 {
-    font-family: 'Shadows Into Light', cursive; /* Fuente estilo manuscrito */
-    color: #d35400; /* Color inspirado en Naruto */
-    text-align: center;
-    margin-bottom: 20px;
+.stat-resistencia {
+  color: #6c757d; /* Gris */
+}
+
+.stat-reflejos {
+  color: #17a2b8; /* Cian */
+}
+
+.stat-percepcion {
+  color: #6610f2; /* Morado */
+}
+
+.stat-voluntad {
+  color: #fd7e14; /* Naranja */
+}
+
+.stat-consumo-chakra {
+  color: #20c997; /* Verde claro */
+}
+
+.stat-objetos-extra {
+  color: #e83e8c; /* Rosa */
 }
 
 /* Botones */
 button {
-    background-color: #d35400; /* Naranja Naruto */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
+  background-color: #d35400; /* Naranja Naruto */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #e67e22; /* Naranja más claro al pasar el mouse */
-}
-
-/* Etiquetas y campos de entrada */
-label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: #2c3e50; /* Texto oscuro */
-}
-
-input, select {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #d4a373;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-/* Contador de stats */
-.contador-stats {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #2c3e50;
-}
-
-/* Mensaje de error */
-.mensaje-error {
-    color: red;
-    font-weight: bold;
-    margin-top: 10px;
-}
-
-/* Diseño responsivo */
-@media (max-width: 768px) {
-    .calculadora-wrapper {
-        flex-direction: column; /* Cambia a diseño vertical */
-    }
-
-    .resultados-finales, .calculadora-container, .calculadora-habilidades {
-        max-width: 100%;
-    }
+  background-color: #e67e22; /* Naranja más claro al pasar el mouse */
 }

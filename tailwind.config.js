@@ -9,7 +9,8 @@ module.exports = {
         narutoLight: '#f4e2c3',
       },
       fontFamily: {
-        righteous: ['Righteous', 'cursive'], // Fuente estilo Naruto
+        righteous: ['Righteous', 'cursive'], 
+        naruto: ['NinjaNaruto', 'sans-serif'],
         sans: ['Arial', 'sans-serif'],
       },
       backgroundImage: {
