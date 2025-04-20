@@ -6,6 +6,7 @@ import Estadisticas from './Estadisticas';
 import GestorDeTecnicas from './GestorDeTecnicas';
 import ArmasNinja from './ArmasNinja'; // Importar el nuevo componente
 import GestionDeFicha from './GestionDeFicha';
+import CombateManager from './CombateManager'; // Importar el nuevo componente
 
 const Calculadora = () => {
   return (
@@ -21,9 +22,9 @@ const Calculadora = () => {
             <CalculadoraDaños />
             <GestionDeFicha /> {/* Nuevo componente */}
           </div>
-          {/* <div className="flex flex-col gap-6 w-full lg:w-1/3">
-            <GestorDeTecnicas />
-          </div> */}
+          <div className="flex flex-col gap-9 w-full lg:w-1/3">
+            <CombateManager /> {/* Nuevo componente */}
+          </div>
         </div>
         <div className="flex flex-col gap-6 p-6 bg-papiro bg-cover bg-center bg-blend-multiply bg-narutoLight text-narutoDark max-w-screen-2xl mx-auto">
           <GestorDeTecnicas />
