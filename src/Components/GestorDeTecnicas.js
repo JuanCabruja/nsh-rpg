@@ -10,6 +10,7 @@ const GestorDeTecnicas = () => {
     categoria: '',
     costoChakra: '',
     alcance: '',
+    area: '',
     calculo: '',
     anotaciones: '',
   });
@@ -20,6 +21,7 @@ const GestorDeTecnicas = () => {
     tipo: '',
     categoria: '',
     alcance: '',
+    area: '',
     costoChakra: '',
     resultado: '',
     anotaciones: '',
@@ -66,6 +68,7 @@ const GestorDeTecnicas = () => {
       categoria: '',
       costoChakra: '',
       alcance: '',
+      area: '',
       resultado: '',
       anotaciones: '',
     });
@@ -89,6 +92,7 @@ const GestorDeTecnicas = () => {
       (filtros.tipo === '' || tecnica.tipo.toLowerCase().includes(filtros.tipo.toLowerCase())) &&
       (filtros.categoria === '' || tecnica.categoria.toLowerCase().includes(filtros.categoria.toLowerCase())) &&
       (filtros.alcance === '' || (tecnica.alcance && parseFloat(tecnica.alcance) >= parseFloat(filtros.alcance))) &&
+      (filtros.area === '' || (tecnica.area && tecnica.area.toLowerCase().includes(filtros.area.toLowerCase()))) &&
       (filtros.costoChakra === '' || (tecnica.costoChakra && parseFloat(tecnica.costoChakra) >= parseFloat(filtros.costoChakra))) &&
       (filtros.resultado === '' || (tecnica.resultado && parseFloat(tecnica.resultado) >= parseFloat(filtros.resultado))) &&
       (filtros.anotaciones === '' || tecnica.anotaciones.toLowerCase().includes(filtros.anotaciones.toLowerCase()))
@@ -142,6 +146,14 @@ const GestorDeTecnicas = () => {
             placeholder="Alcance"
             value={nuevaTecnica.alcance}
             onChange={(e) => setNuevaTecnica({ ...nuevaTecnica, alcance: e.target.value })}
+            className="border border-gray-300 rounded-md p-2 text-sm"
+          />
+            <input
+            type="text"
+            name="area"
+            placeholder="Área"
+            value={nuevaTecnica.area}
+            onChange={(e) => setNuevaTecnica({ ...nuevaTecnica, area: e.target.value })}
             className="border border-gray-300 rounded-md p-2 text-sm"
           />
           <input
@@ -224,7 +236,7 @@ const GestorDeTecnicas = () => {
         className="w-full border border-gray-300 rounded-md p-1 text-xs"
       />
     </th>
-        <th className="border border-gray-300 p-2">
+    <th className="border border-gray-300 p-2">
       <input
         type="text"
         name="alcance"
@@ -234,6 +246,17 @@ const GestorDeTecnicas = () => {
         className="w-full border border-gray-300 rounded-md p-1 text-xs"
       />
     </th>
+    <th className="border border-gray-300 p-2">
+      <input
+        type="text"
+        name="area"
+        placeholder="Área"
+        value={filtros.area}
+        onChange={handleFiltroChange}
+        className="w-full border border-gray-300 rounded-md p-1 text-xs"
+      />
+    </th>
+  
     <th className="border border-gray-300 p-2">
       <input
         type="text"
@@ -279,6 +302,7 @@ const GestorDeTecnicas = () => {
                   <td className="border border-gray-300 p-2">{tecnica.tipo}</td>
                   <td className="border border-gray-300 p-2">{tecnica.categoria || 'N/A'}</td>
                   <td className="border border-gray-300 p-2">{tecnica.alcance || 'N/A'}</td>
+                  <td className="border border-gray-300 p-2">{tecnica.area || 'N/A'}</td>
                   <td className="border border-gray-300 p-2">{tecnica.costoChakra || 'N/A'}</td>
                   <td className="border border-gray-300 p-2">{tecnica.resultado || 'N/A'}</td>
                   <td className="border border-gray-300 p-2">{tecnica.anotaciones}</td>
