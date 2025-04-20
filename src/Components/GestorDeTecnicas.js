@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { StatsContext } from '../Context/StatsContext';
-
 const GestorDeTecnicas = () => {
   const { stats, arma, tecnicas, setTecnicas, calcularDaño } = useContext(StatsContext);
 
@@ -20,9 +19,13 @@ const GestorDeTecnicas = () => {
     rango: '',
     tipo: '',
     categoria: '',
-    costoChakra: '',
     alcance: '',
+    costoChakra: '',
+    resultado: '',
+    anotaciones: '',
   });
+
+  const [tecnicaEnEdicion, setTecnicaEnEdicion] = useState(null); // Nueva técnica en edición
 
   const handleFiltroChange = (e) => {
     const { name, value } = e.target;
@@ -32,42 +35,28 @@ const GestorDeTecnicas = () => {
     }));
   };
 
-  // Recalcular los daños automáticamente cuando cambien los stats o el valor de ARMA
-  useEffect(() => {
-    if (Array.isArray(tecnicas)) {
-      const tecnicasActualizadas = tecnicas.map((tecnica) => ({
-        ...tecnica,
-        resultado: calcularDaño(tecnica.calculo), // Recalcular el daño/defensa
-      }));
-      setTecnicas(tecnicasActualizadas);
-      localStorage.setItem('tecnicas', JSON.stringify(tecnicasActualizadas)); // Sincronizar con localStorage
-    }
-  }, [stats, arma]); // Ejecutar cuando los stats o ARMA cambien
-
-  // Manejar la eliminación de una técnica
-  const handleEliminarTecnica = (index) => {
-    const tecnicasActualizadas = tecnicas.filter((_, i) => i !== index);
-    setTecnicas(tecnicasActualizadas); // Actualizar el estado
-    localStorage.setItem('tecnicas', JSON.stringify(tecnicasActualizadas)); // Sincronizar con localStorage
-  };
-
   const agregarTecnica = () => {
     if (!nuevaTecnica.nombre || !nuevaTecnica.rango || !nuevaTecnica.tipo) {
       alert('Por favor, completa los campos obligatorios (Nombre, Rango, Tipo).');
       return;
     }
 
-    // Calcular el daño de la técnica antes de agregarla
-    const resultado = calcularDaño(nuevaTecnica.calculo);
-
-    const tecnicaConResultado = {
-      ...nuevaTecnica,
-      resultado, // Agregar el resultado del cálculo
-    };
-
-    const tecnicasActualizadas = [...tecnicas, tecnicaConResultado];
-    setTecnicas(tecnicasActualizadas); // Actualizar el estado
-    localStorage.setItem('tecnicas', JSON.stringify(tecnicasActualizadas)); // Sincronizar con localStorage
+    if (tecnicaEnEdicion !== null) {
+      // Actualizar técnica existente
+      const tecnicasActualizadas = tecnicas.map((tecnica, index) =>
+        index === tecnicaEnEdicion ? { ...nuevaTecnica, resultado: calcularDaño(nuevaTecnica.calculo) } : tecnica
+      );
+      setTecnicas(tecnicasActualizadas);
+      localStorage.setItem('tecnicas', JSON.stringify(tecnicasActualizadas));
+      setTecnicaEnEdicion(null); // Salir del modo edición
+    } else {
+      // Agregar nueva técnica
+      const resultado = calcularDaño(nuevaTecnica.calculo);
+      const tecnicaConResultado = { ...nuevaTecnica, resultado };
+      const tecnicasActualizadas = [...tecnicas, tecnicaConResultado];
+      setTecnicas(tecnicasActualizadas);
+      localStorage.setItem('tecnicas', JSON.stringify(tecnicasActualizadas));
+    }
 
     // Resetear el formulario
     setNuevaTecnica({
@@ -77,18 +66,32 @@ const GestorDeTecnicas = () => {
       categoria: '',
       costoChakra: '',
       alcance: '',
-      calculo: '',
+      resultado: '',
       anotaciones: '',
     });
   };
 
+  const handleEditarTecnica = (index) => {
+    setNuevaTecnica(tecnicas[index]); // Cargar la técnica seleccionada en el formulario
+    setTecnicaEnEdicion(index); // Establecer el índice de la técnica en edición
+  };
+
+  const handleEliminarTecnica = (index) => {
+    const tecnicasActualizadas = tecnicas.filter((_, i) => i !== index);
+    setTecnicas(tecnicasActualizadas);
+    localStorage.setItem('tecnicas', JSON.stringify(tecnicasActualizadas));
+  };
+
   const tecnicasFiltradas = tecnicas.filter((tecnica) => {
     return (
-      tecnica.nombre.toLowerCase().includes(filtros.nombre.toLowerCase()) &&
-      tecnica.rango.toLowerCase().includes(filtros.rango.toLowerCase()) &&
-      tecnica.tipo.toLowerCase().includes(filtros.tipo.toLowerCase()) &&
-      tecnica.categoria.toLowerCase().includes(filtros.categoria.toLowerCase()) &&
-      (filtros.costoChakra === '' || tecnica.costoChakra.toString().includes(filtros.costoChakra))
+      (filtros.nombre === '' || tecnica.nombre.toLowerCase().includes(filtros.nombre.toLowerCase())) &&
+      (filtros.rango === '' || tecnica.rango.toLowerCase().includes(filtros.rango.toLowerCase())) &&
+      (filtros.tipo === '' || tecnica.tipo.toLowerCase().includes(filtros.tipo.toLowerCase())) &&
+      (filtros.categoria === '' || tecnica.categoria.toLowerCase().includes(filtros.categoria.toLowerCase())) &&
+      (filtros.alcance === '' || (tecnica.alcance && parseFloat(tecnica.alcance) >= parseFloat(filtros.alcance))) &&
+      (filtros.costoChakra === '' || (tecnica.costoChakra && parseFloat(tecnica.costoChakra) >= parseFloat(filtros.costoChakra))) &&
+      (filtros.resultado === '' || (tecnica.resultado && parseFloat(tecnica.resultado) >= parseFloat(filtros.resultado))) &&
+      (filtros.anotaciones === '' || tecnica.anotaciones.toLowerCase().includes(filtros.anotaciones.toLowerCase()))
     );
   });
 
@@ -98,7 +101,7 @@ const GestorDeTecnicas = () => {
         Gestor de Técnicas
       </h2>
 
-      {/* Formulario compacto para agregar técnicas */}
+      {/* Formulario compacto para agregar/editar técnicas */}
       <div className="bg-gray-50 border border-gray-300 rounded-md p-4 mb-6">
         <div className="grid grid-cols-2 gap-4">
           <input
@@ -136,7 +139,7 @@ const GestorDeTecnicas = () => {
           <input
             type="text"
             name="alcance"
-            placeholder="alcance"
+            placeholder="Alcance"
             value={nuevaTecnica.alcance}
             onChange={(e) => setNuevaTecnica({ ...nuevaTecnica, alcance: e.target.value })}
             className="border border-gray-300 rounded-md p-2 text-sm"
@@ -151,7 +154,7 @@ const GestorDeTecnicas = () => {
           />
           <input
             type="text"
-            name="calculo"
+            name="resultado"
             placeholder="Cálculo (Ej: NIN * 1.5)"
             value={nuevaTecnica.calculo}
             onChange={(e) => setNuevaTecnica({ ...nuevaTecnica, calculo: e.target.value })}
@@ -167,9 +170,11 @@ const GestorDeTecnicas = () => {
         />
         <button
           onClick={agregarTecnica}
-          className="bg-narutoOrange text-white py-2 px-4 rounded-md hover:bg-narutoYellow transition w-full mt-4"
+          className={`${
+            tecnicaEnEdicion !== null ? 'bg-blue-500' : 'bg-narutoOrange'
+          } text-white py-2 px-4 rounded-md hover:bg-narutoYellow transition w-full mt-4`}
         >
-          Agregar Técnica
+          {tecnicaEnEdicion !== null ? 'Guardar Cambios' : 'Agregar Técnica'}
         </button>
       </div>
 
@@ -222,9 +227,9 @@ const GestorDeTecnicas = () => {
         <th className="border border-gray-300 p-2">
       <input
         type="text"
-        name="costoChakra"
+        name="alcance"
         placeholder="Alcance"
-        value={filtros.costoChakra}
+        value={filtros.alcance}
         onChange={handleFiltroChange}
         className="w-full border border-gray-300 rounded-md p-1 text-xs"
       />
@@ -240,8 +245,26 @@ const GestorDeTecnicas = () => {
       />
     </th>
 
-    <th className="border border-gray-300 p-2">Resultado</th>
-    <th className="border border-gray-300 p-2">Anotaciones</th>
+        <th className="border border-gray-300 p-2">
+      <input
+        type="text"
+        name="resultado"
+        placeholder="Resultado"
+        value={filtros.resultado}
+        onChange={handleFiltroChange}
+        className="w-full border border-gray-300 rounded-md p-1 text-xs"
+      />
+    </th>
+        <th className="border border-gray-300 p-2">
+      <input
+        type="text"
+        name="anotaciones"
+        placeholder="Anotaciones"
+        value={filtros.anotaciones}
+        onChange={handleFiltroChange}
+        className="w-full border border-gray-300 rounded-md p-1 text-xs"
+      />
+    </th>
     <th className="border border-gray-300 p-2">Acciones</th>
   </tr>
   <tr>
@@ -260,6 +283,12 @@ const GestorDeTecnicas = () => {
                   <td className="border border-gray-300 p-2">{tecnica.resultado || 'N/A'}</td>
                   <td className="border border-gray-300 p-2">{tecnica.anotaciones}</td>
                   <td className="border border-gray-300 p-2">
+                    <button
+                      onClick={() => handleEditarTecnica(index)}
+                      className="bg-blue-500 text-white py-1 px-2 rounded-md hover:bg-blue-600 transition text-xs mr-2"
+                    >
+                      Editar
+                    </button>
                     <button
                       onClick={() => handleEliminarTecnica(index)}
                       className="bg-red-500 text-white py-1 px-2 rounded-md hover:bg-red-600 transition text-xs"
