@@ -13,9 +13,9 @@ const GestionDeFicha = () => {
     const savedTecnicas = JSON.parse(localStorage.getItem('tecnicas') || []);
     const data = {
       nombrePersonaje,
-      savedStats,
-      savedArma,
-      savedTecnicas,
+      "stats" : savedStats,
+      "arma" : savedArma,
+      "tecnicas" : savedTecnicas,
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -35,9 +35,17 @@ const GestionDeFicha = () => {
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target.result);
-        if (data.nombrePersonaje) setNombrePersonaje(data.nombrePersonaje);
-        if (data.stats) setStats(data.stats);
-        if (data.arma) updateArma(data.arma.nombre, data.arma.daño);
+        if (data.nombrePersonaje) {
+          setNombrePersonaje(data.nombrePersonaje);
+        }
+        if (data.stats) {
+          setStats(data.stats);
+          localStorage.setItem('stats', JSON.stringify(data.stats));
+        }
+        if (data.arma) {
+          updateArma(data.arma.nombre, data.arma.daño);
+          localStorage.setItem('arma', JSON.stringify(data.arma));
+        }
         if (data.tecnicas) {
           setTecnicas(data.tecnicas);
           localStorage.setItem('tecnicas', JSON.stringify(data.tecnicas));

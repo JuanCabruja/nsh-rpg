@@ -10,6 +10,7 @@ const GestorDeTecnicas = () => {
     tipo: '',
     categoria: '',
     costoChakra: '',
+    alcance: '',
     calculo: '',
     anotaciones: '',
   });
@@ -20,6 +21,7 @@ const GestorDeTecnicas = () => {
     tipo: '',
     categoria: '',
     costoChakra: '',
+    alcance: '',
   });
 
   const handleFiltroChange = (e) => {
@@ -74,6 +76,7 @@ const GestorDeTecnicas = () => {
       tipo: '',
       categoria: '',
       costoChakra: '',
+      alcance: '',
       calculo: '',
       anotaciones: '',
     });
@@ -131,6 +134,14 @@ const GestorDeTecnicas = () => {
             className="border border-gray-300 rounded-md p-2 text-sm"
           />
           <input
+            type="text"
+            name="alcance"
+            placeholder="alcance"
+            value={nuevaTecnica.alcance}
+            onChange={(e) => setNuevaTecnica({ ...nuevaTecnica, alcance: e.target.value })}
+            className="border border-gray-300 rounded-md p-2 text-sm"
+          />
+          <input
             type="number"
             name="costoChakra"
             placeholder="Costo de Chakra"
@@ -166,18 +177,77 @@ const GestorDeTecnicas = () => {
       <div className="mt-6">
         {tecnicas.length > 0 ? (
           <table className="w-full text-sm border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 p-2">Nombre</th>
-                <th className="border border-gray-300 p-2">Rango</th>
-                <th className="border border-gray-300 p-2">Tipo</th>
-                <th className="border border-gray-300 p-2">Categoría</th>
-                <th className="border border-gray-300 p-2">Costo Chakra</th>
-                <th className="border border-gray-300 p-2">Resultado</th>
-                <th className="border border-gray-300 p-2">Anotaciones</th>
-                <th className="border border-gray-300 p-2">Acciones</th>
-              </tr>
-            </thead>
+<thead>
+  <tr className="bg-gray-100">
+    <th className="border border-gray-300 p-2">
+      <input
+        type="text"
+        name="nombre"
+        placeholder="Nombre"
+        value={filtros.nombre}
+        onChange={handleFiltroChange}
+        className="w-full border border-gray-300 rounded-md p-1 text-xs"
+      />
+    </th>
+    <th className="border border-gray-300 p-2">
+      <input
+        type="text"
+        name="rango"
+        placeholder="Rango"
+        value={filtros.rango}
+        onChange={handleFiltroChange}
+        className="w-full border border-gray-300 rounded-md p-1 text-xs"
+      />
+    </th>
+    <th className="border border-gray-300 p-2">
+      <input
+        type="text"
+        name="tipo"
+        placeholder="Tipo"
+        value={filtros.tipo}
+        onChange={handleFiltroChange}
+        className="w-full border border-gray-300 rounded-md p-1 text-xs"
+      />
+    </th>
+    <th className="border border-gray-300 p-2">
+      <input
+        type="text"
+        name="categoria"
+        placeholder="Categoría"
+        value={filtros.categoria}
+        onChange={handleFiltroChange}
+        className="w-full border border-gray-300 rounded-md p-1 text-xs"
+      />
+    </th>
+        <th className="border border-gray-300 p-2">
+      <input
+        type="text"
+        name="costoChakra"
+        placeholder="Alcance"
+        value={filtros.costoChakra}
+        onChange={handleFiltroChange}
+        className="w-full border border-gray-300 rounded-md p-1 text-xs"
+      />
+    </th>
+    <th className="border border-gray-300 p-2">
+      <input
+        type="text"
+        name="costoChakra"
+        placeholder="Chakra"
+        value={filtros.costoChakra}
+        onChange={handleFiltroChange}
+        className="w-full border border-gray-300 rounded-md p-1 text-xs"
+      />
+    </th>
+
+    <th className="border border-gray-300 p-2">Resultado</th>
+    <th className="border border-gray-300 p-2">Anotaciones</th>
+    <th className="border border-gray-300 p-2">Acciones</th>
+  </tr>
+  <tr>
+
+  </tr>
+</thead>
             <tbody>
               {tecnicasFiltradas.map((tecnica, index) => (
                 <tr key={index} className="hover:bg-gray-50">
@@ -185,6 +255,7 @@ const GestorDeTecnicas = () => {
                   <td className="border border-gray-300 p-2">{tecnica.rango}</td>
                   <td className="border border-gray-300 p-2">{tecnica.tipo}</td>
                   <td className="border border-gray-300 p-2">{tecnica.categoria || 'N/A'}</td>
+                  <td className="border border-gray-300 p-2">{tecnica.alcance || 'N/A'}</td>
                   <td className="border border-gray-300 p-2">{tecnica.costoChakra || 'N/A'}</td>
                   <td className="border border-gray-300 p-2">{tecnica.resultado || 'N/A'}</td>
                   <td className="border border-gray-300 p-2">{tecnica.anotaciones}</td>
