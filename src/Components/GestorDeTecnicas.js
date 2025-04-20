@@ -99,6 +99,14 @@ const GestorDeTecnicas = () => {
     );
   });
 
+  const copiarTecnica = (tecnica) => {
+  // const alcanceOArea = "/ " +  tecnica.alcance ||  "/ " +  tecnica.area || '';
+  const alcance = tecnica.alcance ? `/ Alcance: ${tecnica.alcance}` : '';
+  const area = tecnica.area ? `/ Área: ${tecnica.area}` : '';
+  const texto = `* ${tecnica.nombre} / ${tecnica.costoChakra || '0'}CH ${alcance} ${area}*`;
+  navigator.clipboard.writeText(texto)
+};
+
   return (
     <div className="bg-white shadow-lg rounded-lg p-6 w-full border-2 border-yellow-600 mt-2">
       <h2 className="text-narutoOrange font-righteous text-xl mb-4 text-center">
@@ -318,6 +326,12 @@ const GestorDeTecnicas = () => {
                       className="bg-red-500 text-white py-1 px-2 rounded-md hover:bg-red-600 transition text-xs"
                     >
                       Eliminar
+                    </button>
+                      <button
+                      onClick={() => copiarTecnica(tecnica)}
+                      className="bg-green-500 text-white py-1 px-2 rounded-md hover:bg-green-600 transition text-xs"
+                    >
+                     Copiar
                     </button>
                   </td>
                 </tr>
