@@ -3,10 +3,10 @@ import React, { createContext, useState, useEffect } from 'react';
 export const StatsContext = createContext();
 
 const limitesPorRango = {
-  'D': { maxStats: 15, maxStatValue: 4, maxStaminaValue: 3 },
-  'C': { maxStats: 19, maxStatValue: 4.5, maxStaminaValue: 3 },
-  'B': { maxStats: 25, maxStatValue: 5, maxStaminaValue: 4.5 },
-  'A': { maxStats: 29, maxStatValue: 5, maxStaminaValue: 4.5 },
+  'D': { maxStats: 15, maxStatValue: 4, maxStaminaValue: 5 },
+  'C': { maxStats: 19, maxStatValue: 4.5, maxStaminaValue: 5 },
+  'B': { maxStats: 25, maxStatValue: 5, maxStaminaValue: 5 },
+  'A': { maxStats: 29, maxStatValue: 5, maxStaminaValue: 5 },
   'S': { maxStats: 35.5, maxStatValue: 5, maxStaminaValue: 5 },
 };
 

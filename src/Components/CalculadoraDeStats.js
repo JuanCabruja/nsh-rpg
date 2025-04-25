@@ -67,8 +67,6 @@ const CalculadoraDeStats = () => {
               max={
                 permitirExceder
                   ? 100
-                  : stat === 'est'
-                  ? limitesPorRango[rango].maxStaminaValue
                   : limitesPorRango[rango].maxStatValue
               } // Permitir exceder el límite
               value={stats[stat]}

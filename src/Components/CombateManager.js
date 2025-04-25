@@ -1,25 +1,21 @@
 import React, { useState, useContext } from 'react';
 import { StatsContext } from '../Context/StatsContext';
 
-
 const CombateManager = () => {
+  const { resultados, stats } = useContext(StatsContext);
+  const [vit, setVit] = useState(resultados.vit);
+  const [chakra, setChakra] = useState(resultados.chakra);
+  const [formula, setFormula] = useState('');
 
-  const { resultados } = useContext(StatsContext); // Obtener valores iniciales de VIT y Chakra del contexto
-  const [vit, setVit] = useState(resultados.vit); // Estado local para VIT
-  const [chakra, setChakra] = useState(resultados.chakra); // Estado local para Chakra
-  const [formula, setFormula] = useState(''); // Fórmula matemática
-  const [target, setTarget] = useState('vit'); // Objetivo (VIT o Chakra)
-
-  console.log('Valores iniciales:', resultados); // Verificar los valores iniciales
-  console.log('Valores actuales:', { vit, chakra }); // Verificar los valores actuales
-  console.log('Fórmula:', formula); // Verificar la fórmula ingresada
+  console.log('Valores iniciales:', resultados);
+  console.log('Valores actuales:', { vit, chakra });
+  console.log('Fórmula:', formula);
 
   // Función para aplicar la fórmula matemática
-  const applyFormula = () => {
+  const applyFormula = (target, value) => {
     try {
-      const currentValue = target === 'vit' ? vit : chakra;
-      const result = eval(`${currentValue} ${formula}`); // Evaluar la fórmula
-      const updatedValue = Math.max(0, result); // Asegurar que no sea negativo
+      const result = eval(`${value} ${formula}`);
+      const updatedValue = Math.max(0, result);
 
       if (target === 'vit') {
         setVit(updatedValue);
@@ -27,7 +23,7 @@ const CombateManager = () => {
         setChakra(updatedValue);
       }
 
-      setFormula(''); // Limpiar la fórmula
+      setFormula('');
     } catch (error) {
       console.error('Error al aplicar la fórmula:', error);
       alert('Fórmula inválida. Por favor, revisa la sintaxis.');
@@ -40,35 +36,44 @@ const CombateManager = () => {
     setChakra(resultados.chakra);
   };
 
+  // Función para copiar los stats al portapapeles
+  const copyStatsToClipboard = () => {
+    const statsString = `[ NIN: ${stats.nin}n, TAI: ${stats.tai}, GEN: ${stats.gen}, INT: ${stats.int}, FUE: ${stats.fue}, AGI: ${stats.agi}, EST: ${stats.est}, SM: ${stats.sm} ]`;
+    navigator.clipboard.writeText(statsString);
+  };
+
   return (
-    <div className="bg-white shadow-lg rounded-lg p-6 w-full border-2 border-red-600">
-      <h2 className="text-red-600 font-bold text-xl mb-4 text-center">
+    <div className="bg-white shadow-lg rounded-lg p-4 border-2 border-yellow-600">
+      <h2 className="text-narutoOrange font-bold text-lg mb-4 text-center">
         Gestión de Combate
       </h2>
 
-      {/* Mostrar valores actuales */}
-      <div className="mb-4">
-        <p className="text-green-500 font-bold text-lg">
-          Vitalidad (VIT): {vit}
-        </p>
-        <p className="text-blue-500 font-bold text-lg">
-          Chakra: {chakra}
-        </p>
-      </div>
-
-      {/* Selección del objetivo */}
-      <div className="mb-4">
-        <label className="block text-sm font-bold text-gray-700 mb-2">
-          Selecciona el objetivo:
-        </label>
-        <select
-          value={target}
-          onChange={(e) => setTarget(e.target.value)}
-          className="w-full border border-gray-300 rounded-md p-2 text-sm"
-        >
-          <option value="vit">Vitalidad (VIT)</option>
-          <option value="chakra">Chakra</option>
-        </select>
+      {/* Display de VIT y Chakra */}
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-1">
+            Vitalidad (VIT):
+          </label>
+          <span className="text-green-700 font-bold text-lg">{vit}</span>
+          <button
+            onClick={() => applyFormula('vit', vit)}
+            className="mt-2 bg-green-600 text-white py-1 px-3 rounded-md hover:bg-green-700 transition w-full text-sm"
+          >
+            Aplicar Fórmula a VIT
+          </button>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-1">
+            Chakra:
+          </label>
+          <span className="text-blue-700 font-bold text-lg">{chakra}</span>
+          <button
+            onClick={() => applyFormula('chakra', chakra)}
+            className="mt-2 bg-blue-600 text-white py-1 px-3 rounded-md hover:bg-blue-700 transition w-full text-sm"
+          >
+            Aplicar Fórmula a Chakra
+          </button>
+        </div>
       </div>
 
       {/* Campo para la fórmula matemática */}
@@ -86,18 +91,18 @@ const CombateManager = () => {
       </div>
 
       {/* Botones de acción */}
-      <div className="flex gap-4">
-        <button
-          onClick={applyFormula}
-          className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition w-full"
-        >
-          Aplicar Fórmula
-        </button>
+      <div className="flex flex-col gap-2">
         <button
           onClick={resetValues}
-          className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition w-full"
+          className="bg-narutoOrange text-white py-2 px-4 rounded-md hover:bg-gray-700 transition w-full text-sm"
         >
           Reiniciar Valores
+        </button>
+        <button
+          onClick={copyStatsToClipboard}
+          className="bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 transition w-full text-sm"
+        >
+          Copiar Stats
         </button>
       </div>
     </div>
