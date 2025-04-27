@@ -38,9 +38,16 @@ export const StatsProvider = ({ children }) => {
     return savedStats ? JSON.parse(savedStats) : { nin: 0.5, tai: 0.5, gen: 0.5, int: 0.5, fue: 0.5, agi: 0.5, est: 0.5, sm: 0.5 };
   });
 
+  const [statsMejorados, setStatsMejorados] = useState(() => {
+    const savedStatsMejorados = localStorage.getItem('statsMejorados');
+    return savedStatsMejorados ? JSON.parse(savedStatsMejorados) : { nin: 0.5, tai: 0.5, gen: 0.5, int: 0.5, fue: 0.5, agi: 0.5, est: 0.5, sm: 0.5 };
+  });
+
+  const [usarStatsMejorados, setUsarStatsMejorados] = useState(false); // Controla si se usan stats mejorados
+
+
   const [arma, setArma] = useState(() => {
     const savedArma = localStorage.getItem('arma');
-    console.log('Cargando arma desde localStorage:', savedArma);
     if (savedArma === 'NaN' || savedArma === undefined) {
       return { nombre: '', daño: 0 };
     }
@@ -59,26 +66,27 @@ export const StatsProvider = ({ children }) => {
     const savedMaxStats = localStorage.getItem('maxStats');
     const savedRango = localStorage.getItem('rango');
     const savedArma = localStorage.getItem('arma');
+    const savedStatsMejorados = localStorage.getItem('statsMejorados');
+    
 
     if (savedStats) {
-      console.log('Cargando stats desde localStorage:', savedStats);
       setStats(JSON.parse(savedStats));
     }
     if (savedMaxStats) {
-      console.log('Cargando maxStats desde localStorage:', savedMaxStats);
       setMaxStats(parseFloat(savedMaxStats));
     }
     if (savedRango) {
-      console.log('Cargando rango desde localStorage:', savedRango);
       setRango(savedRango);
     }
     if (savedArma) {
-      console.log('Cargando arma desde localStorage:', savedArma);
       if (savedArma === 'NaN' || savedArma === undefined) {
         setArma({ nombre: '', daño: 0 });
       } else {
         setArma(JSON.parse(savedArma));
       }
+    }
+    if (savedStatsMejorados) {
+      setStatsMejorados(JSON.parse(savedStatsMejorados));
     }
   }, []);
 
@@ -88,7 +96,32 @@ export const StatsProvider = ({ children }) => {
     localStorage.setItem('maxStats', maxStats);
     localStorage.setItem('rango', rango);
     localStorage.setItem('arma', JSON.stringify(arma));
-  }, [stats, maxStats, rango, arma]);
+    localStorage.setItem('statsMejorados', JSON.stringify(statsMejorados));
+  }, [stats, statsMejorados, maxStats, rango, arma]);
+
+    const toggleUsarStatsMejorados = () => {
+    setUsarStatsMejorados((prev) => !prev);
+    if (!usarStatsMejorados) {
+      // Cambiar a stats mejorados
+      setStats(statsMejorados);
+    } else {
+      // Cambiar a stats normales
+      setStats((prevStats) => {
+        setStatsMejorados(prevStats); // Guardar los stats actuales como mejorados
+        return stats; // Restaurar los stats normales
+      });
+    }
+  };
+
+  const guardarStatsActuales = () => {
+    if (usarStatsMejorados) {
+      setStatsMejorados(stats);
+      alert('Configuración de stats mejorados guardada.');
+    } else {
+      setStats(stats);
+      alert('Configuración de stats normales guardada.');
+    }
+  };
 
     // Calcular el daño/defensa basado en la fórmula
     const calcularDaño = (formula) => {
@@ -312,7 +345,10 @@ export const StatsProvider = ({ children }) => {
         calcularDaño,
         permitirExceder,
         setPermitirExceder,
-        handlePermitirExceder
+        handlePermitirExceder,
+        toggleUsarStatsMejorados,
+        guardarStatsActuales,
+        setStatsMejorados
       }}
     >
       {children}
