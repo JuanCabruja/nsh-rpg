@@ -5,7 +5,7 @@ import CombateCard from './CombateCard';
 const CombateManager = () => {
   const { resultados } = useContext(StatsContext);
 
-  const tiposDeAcciones =  ['Anticipación',  'Ofensiva',   'Defensiva', 'Suplementaria', 'Otro']
+  const tiposDeAcciones =  ['Anticipación',  'Ofensiva',   'Defensiva', 'Evasión', 'Anulación', 'Suplementaria', 'Contraataque', 'Otro']
 
   // Estados
   const [combatientes, setCombatientes] = useState(() => {
@@ -34,6 +34,8 @@ const CombateManager = () => {
   const nombreDeUsuario = localStorage.getItem('nombreDeUsuario') || 'Yo';
   const [mostrarCamposAdicionales, setMostrarCamposAdicionales] = useState(false);
   const [accionEditando, setAccionEditando] = useState(null); // guarda el índice de la acción que se está editando
+  const [accionQueReemplaza, setAccionQueReemplaza] = useState('');
+
 
   // Cargar datos iniciales desde localStorage o establecer valores iniciales
 useEffect(() => {
@@ -110,29 +112,86 @@ const manejarAccion = () => {
   }
 
   let nuevaListaCombatientes = [...combatientes];
+  let aplicarEfectos = true;
 
-  // Si se está editando, revertir efectos anteriores
+  // ⚠️ Si se edita una acción que está siendo reemplazada por otra, impedirlo
   if (accionEditando !== null) {
-    const accionOriginal = acciones[accionEditando];
-    const ejecutorOrgIndex = combatientes.findIndex(c => c.nombre === accionOriginal.ejecutor);
-    const receptorOrgIndex = combatientes.findIndex(c => c.nombre === accionOriginal.receptor);
-
-    if (ejecutorOrgIndex !== -1) {
-      nuevaListaCombatientes[ejecutorOrgIndex].chakra += parseInt(accionOriginal.costeChakra, 10);
-    }
-
-    if (receptorOrgIndex !== -1) {
-      nuevaListaCombatientes[receptorOrgIndex].vit += parseInt(accionOriginal.daño, 10);
+    const esReaccionada = acciones.some((a) => a.accionQueReemplaza === accionEditando);
+    if (esReaccionada) {
+      alert('No se puede editar una acción que está siendo reemplazada por otra. Elimina primero la reacción.');
+      return;
     }
   }
 
-  // Aplicar nueva acción
-  nuevaListaCombatientes[ejecutorIndex].chakra = Math.max(0, nuevaListaCombatientes[ejecutorIndex].chakra - parseInt(costeChakra, 10));
-  nuevaListaCombatientes[receptorIndex].vit = Math.max(0, nuevaListaCombatientes[receptorIndex].vit - parseInt(daño, 10));
+  // ⚙️ Revertir efectos si se está editando
+  if (accionEditando !== null) {
+    const accionOriginal = acciones[accionEditando];
+    const ejOrgIndex = combatientes.findIndex(c => c.nombre === accionOriginal.ejecutor);
+    const recOrgIndex = combatientes.findIndex(c => c.nombre === accionOriginal.receptor);
 
-  setCombatientes(nuevaListaCombatientes);
+    if (ejOrgIndex !== -1) nuevaListaCombatientes[ejOrgIndex].chakra += parseInt(accionOriginal.costeChakra, 10);
+    if (recOrgIndex !== -1) nuevaListaCombatientes[recOrgIndex].vit += parseInt(accionOriginal.daño, 10);
+  }
 
-  const nuevaAccion = { habilidad, daño, costeChakra, tipo, ejecutor, receptor, ronda };
+  // 👉 Si la acción reemplaza otra anterior, aplicar la lógica especial
+  if (accionQueReemplaza !== '') {
+    const indexAnterior = parseInt(accionQueReemplaza, 10);
+    const accionAnterior = acciones[indexAnterior];
+
+    if (accionAnterior) {
+      const ejAntIndex = combatientes.findIndex(c => c.nombre === accionAnterior.ejecutor);
+      const recAntIndex = combatientes.findIndex(c => c.nombre === accionAnterior.receptor);
+
+      const dañoNuevo = parseInt(daño, 10);
+      const chakraNuevo = parseInt(costeChakra, 10);
+      const dañoAntiguo = parseInt(accionAnterior.daño, 10);
+      const chakraAntiguo = parseInt(accionAnterior.costeChakra, 10);
+
+      // 🔵 ANTICIPACIÓN
+      if (tipo === 'Anticipación') {
+        if (recAntIndex !== -1) nuevaListaCombatientes[recAntIndex].vit += dañoAntiguo;
+        if (ejAntIndex !== -1) nuevaListaCombatientes[ejAntIndex].chakra += chakraAntiguo;
+        if (ejecutorIndex !== -1) nuevaListaCombatientes[ejecutorIndex].chakra = Math.max(0, nuevaListaCombatientes[ejecutorIndex].chakra - chakraNuevo);
+        if (ejAntIndex !== -1) nuevaListaCombatientes[ejAntIndex].vit = Math.max(0, nuevaListaCombatientes[ejAntIndex].vit - dañoNuevo);
+        aplicarEfectos = false;
+      }
+
+      // 🛡️ DEFENSIVA, EVASIÓN, ANULACIÓN
+      else if (['Defensiva', 'Evasión', 'Anulación'].includes(tipo)) {
+        if (ejecutorIndex !== -1) nuevaListaCombatientes[ejecutorIndex].chakra = Math.max(0, nuevaListaCombatientes[ejecutorIndex].chakra - chakraNuevo);
+        if (recAntIndex !== -1) {
+          nuevaListaCombatientes[recAntIndex].vit += dañoAntiguo;
+          nuevaListaCombatientes[recAntIndex].vit = Math.max(0, nuevaListaCombatientes[recAntIndex].vit - dañoNuevo);
+        }
+        aplicarEfectos = false;
+      }
+
+      // 🔴 CONTRAATAQUE
+      else if (tipo === 'Contraataque') {
+        if (ejecutorIndex !== -1) nuevaListaCombatientes[ejecutorIndex].chakra = Math.max(0, nuevaListaCombatientes[ejecutorIndex].chakra - chakraNuevo);
+        if (receptorIndex !== -1) nuevaListaCombatientes[receptorIndex].vit = Math.max(0, nuevaListaCombatientes[receptorIndex].vit - dañoNuevo);
+        aplicarEfectos = false;
+      }
+    }
+  }
+
+  // ✅ Aplicación estándar si no es una reacción especial
+  if (aplicarEfectos) {
+    nuevaListaCombatientes[ejecutorIndex].chakra = Math.max(0, nuevaListaCombatientes[ejecutorIndex].chakra - parseInt(costeChakra, 10));
+    nuevaListaCombatientes[receptorIndex].vit = Math.max(0, nuevaListaCombatientes[receptorIndex].vit - parseInt(daño, 10));
+  }
+
+  // 🧠 Construir y guardar nueva acción
+  const nuevaAccion = {
+    habilidad,
+    daño,
+    costeChakra,
+    tipo,
+    ejecutor,
+    receptor,
+    ronda,
+    accionQueReemplaza: accionQueReemplaza !== '' ? parseInt(accionQueReemplaza, 10) : null,
+  };
 
   let nuevasAcciones;
   if (accionEditando !== null) {
@@ -143,9 +202,12 @@ const manejarAccion = () => {
   }
 
   setAcciones(nuevasAcciones);
+  setCombatientes(nuevaListaCombatientes);
   localStorage.setItem('acciones', JSON.stringify(nuevasAcciones));
+  localStorage.setItem('combatientes', JSON.stringify(nuevaListaCombatientes));
 
-  setAccionEditando(null); // salir del modo edición
+  // 🧹 Limpiar formulario
+  setAccionEditando(null);
   setHabilidad('');
   setDaño('');
   setCosteChakra('');
@@ -153,7 +215,114 @@ const manejarAccion = () => {
   setReceptor('');
   setRonda('');
   setTipo('');
+  setAccionQueReemplaza('');
 };
+
+
+
+const eliminarAccion = (index) => {
+  const confirmacion = window.confirm('¿Estás seguro de que deseas eliminar esta acción? Esta operación no se puede deshacer.');
+  if (!confirmacion) return;
+
+  const accion = acciones[index];
+  const { ejecutor, receptor, daño, costeChakra, tipo, accionQueReemplaza } = accion;
+
+  const ejecutorIndex = combatientes.findIndex(c => c.nombre === ejecutor);
+  const receptorIndex = combatientes.findIndex(c => c.nombre === receptor);
+
+  if (ejecutorIndex === -1 || receptorIndex === -1) {
+    alert('Error al revertir la acción. Combatientes no encontrados.');
+    return;
+  }
+
+  let nuevaListaCombatientes = [...combatientes];
+
+  if (accionQueReemplaza !== null) {
+    const accionOriginal = acciones[accionQueReemplaza];
+    const ejOriginal = combatientes.find(c => c.nombre === accionOriginal.ejecutor);
+    const recOriginal = combatientes.find(c => c.nombre === accionOriginal.receptor);
+    const ejOriginalIndex = combatientes.findIndex(c => c.nombre === accionOriginal.ejecutor);
+    const recOriginalIndex = combatientes.findIndex(c => c.nombre === accionOriginal.receptor);
+
+    const dañoOriginal = parseInt(accionOriginal.daño, 10);
+    const chakraOriginal = parseInt(accionOriginal.costeChakra, 10);
+    const dañoReaccion = parseInt(daño, 10);
+    const chakraReaccion = parseInt(costeChakra, 10);
+
+    // 🔁 Revertimos los efectos de la reacción según su tipo
+    switch (tipo) {
+      case 'Anticipación':
+        // Revertir daño hecho por la reacción
+        if (receptorIndex !== -1) nuevaListaCombatientes[receptorIndex].vit += dañoReaccion;
+
+        // Devolver chakra gastado por la reacción
+        if (ejecutorIndex !== -1) nuevaListaCombatientes[ejecutorIndex].chakra += chakraReaccion;
+
+        // Volver a aplicar la acción original
+        if (ejOriginalIndex !== -1) nuevaListaCombatientes[ejOriginalIndex].chakra -= chakraOriginal;
+        if (recOriginalIndex !== -1) nuevaListaCombatientes[recOriginalIndex].vit -= dañoOriginal;
+        break;
+
+      case 'Defensiva':
+      case 'Evasión':
+      case 'Anulación':
+        if (ejecutorIndex !== -1) nuevaListaCombatientes[ejecutorIndex].chakra += chakraReaccion;
+        if (receptorIndex !== -1) nuevaListaCombatientes[receptorIndex].vit += dañoReaccion;
+
+        // Volver a aplicar daño de la acción original
+        if (recOriginalIndex !== -1) nuevaListaCombatientes[recOriginalIndex].vit -= dañoOriginal;
+        break;
+
+      case 'Contraataque':
+        if (ejecutorIndex !== -1) nuevaListaCombatientes[ejecutorIndex].chakra += chakraReaccion;
+        if (receptorIndex !== -1) nuevaListaCombatientes[receptorIndex].vit += dañoReaccion;
+        break;
+
+      default:
+        // Para cualquier otro tipo de reacción
+        if (ejecutorIndex !== -1) nuevaListaCombatientes[ejecutorIndex].chakra += chakraReaccion;
+        if (ejecutorIndex !== -1) nuevaListaCombatientes[ejecutorIndex].vit += dañoReaccion;
+        break;
+    }
+
+  } else {
+    // Acción normal (no es reacción)
+    nuevaListaCombatientes[ejecutorIndex].chakra += parseInt(costeChakra, 10);
+    nuevaListaCombatientes[receptorIndex].vit += parseInt(daño, 10);
+  }
+
+  // Limitar recuperación a stats base
+  if (ejecutorIndex !== -1)
+    nuevaListaCombatientes[ejecutorIndex].chakra = Math.min(nuevaListaCombatientes[ejecutorIndex].chakra, resultados?.chakra || 9999);
+  if (receptorIndex !== -1)
+    nuevaListaCombatientes[receptorIndex].vit = Math.min(nuevaListaCombatientes[receptorIndex].vit, resultados?.vit || 9999);
+
+  // Actualizar combatientes y acciones
+  setCombatientes(nuevaListaCombatientes);
+  localStorage.setItem('combatientes', JSON.stringify(nuevaListaCombatientes));
+
+  const nuevasAcciones = acciones.filter((_, i) => i !== index);
+  setAcciones(nuevasAcciones);
+  localStorage.setItem('acciones', JSON.stringify(nuevasAcciones));
+
+  // Limpiar formulario si era la acción editada
+  if (accionEditando === index) {
+    setAccionEditando(null);
+    setHabilidad('');
+    setDaño('');
+    setCosteChakra('');
+    setEjecutor('');
+    setReceptor('');
+    setRonda('');
+    setTipo('');
+    setAccionQueReemplaza('');
+  }
+};
+
+
+
+
+
 
 
   // Limpiar la sesión
@@ -248,6 +417,29 @@ const copiarVitYCh = () => {
       {/* Formulario para registrar acciones */}
       <div className="mb-4">
         <h3 className="text-gray-800 font-bold text-md mb-2">Registrar Acción</h3>
+                    <select
+        value={accionQueReemplaza}
+        onChange={(e) => {
+          const idx = e.target.value;
+          setAccionQueReemplaza(idx);
+        
+          if (idx !== '') {
+            const accionOriginal = acciones[parseInt(idx, 10)];
+            if (accionOriginal) {
+              setEjecutor(accionOriginal.receptor); // quien fue atacado, ahora reacciona
+              setReceptor(accionOriginal.ejecutor); // quien atacó, ahora recibe la reacción
+            }
+          }
+        }}
+        className="w-full border border-gray-300 rounded-md p-2 text-sm mb-2"
+      >
+        <option value="">¿Reacciona a una acción anterior?</option>
+        {acciones.map((a, idx) => (
+          <option key={idx} value={idx}>
+            {a.habilidad} (Ronda {a.ronda}) — {a.ejecutor} → {a.receptor}
+          </option>
+        ))}
+      </select>
         <input
           type="text"
           value={habilidad}
@@ -259,7 +451,7 @@ const copiarVitYCh = () => {
           type="number"
           value={daño}
           onChange={(e) => setDaño(e.target.value)}
-          placeholder="Daño (ejemplo: 200)"
+          placeholder="Daño indicar siempre cuanto daño hace o cuanto recibe  (ejemplo: 200)"
           className="w-full border border-gray-300 rounded-md p-2 text-sm mb-2"
         />
         <input
@@ -270,17 +462,19 @@ const copiarVitYCh = () => {
           className="w-full border border-gray-300 rounded-md p-2 text-sm mb-2"
         />
         <select
-          value={receptor}
+          value={tipo}
           onChange={(e) => setTipo(e.target.value)}
           className="w-full border border-gray-300 rounded-md p-2 text-sm mb-2"
         >
           <option value="">Tipo de acción</option>
-          {tiposDeAcciones?.map((c) => (
+          {tiposDeAcciones.map((c) => (
             <option key={c} value={c}>
               {c}
             </option>
           ))}
         </select>
+
+
         <select
           value={ejecutor}
           onChange={(e) => setEjecutor(e.target.value)}
@@ -293,6 +487,11 @@ const copiarVitYCh = () => {
             </option>
           ))}
         </select>
+        {tipo === 'Contraataque' && (
+          <p className="text-xs text-gray-500 mb-2">
+            Seleccionar receptor que recibirá el daño del contraataque
+          </p>
+        )}
         <select
           value={receptor}
           onChange={(e) => setReceptor(e.target.value)}
@@ -312,14 +511,6 @@ const copiarVitYCh = () => {
           placeholder="Ronda"
           className="w-full border border-gray-300 rounded-md p-2 text-sm mb-2"
         />
-        
-
-        {mostrarCamposAdicionales && (
-          <>
-
-          </>
-        )}
-
         <button
           onClick={manejarAccion}
           className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition w-full text-sm"
@@ -352,6 +543,12 @@ const copiarVitYCh = () => {
                 <div className="text-sm text-gray-500">
                   Daño: {accion.daño}, Chakra: -{accion.costeChakra}
                 </div>
+                {accion.accionQueReemplaza !== null && (
+                  <div className="text-xs italic text-blue-500 mt-1">
+                  Reemplaza a acción #{accion.accionQueReemplaza + 1}
+                </div>
+      )}
+
                 <button
                  onClick={() => {
                    const accion = acciones[index];
@@ -365,9 +562,16 @@ const copiarVitYCh = () => {
                    setAccionEditando(index);
                  }}
                  className="bg-yellow-400 text-xs px-2 py-1 rounded-md ml-2"
->               
-  Editar
-</button>
+                >               
+                Editar
+              </button>
+              <button
+                onClick={() => eliminarAccion(index)}
+                className="bg-red-500 text-xs text-white px-2 py-1 rounded-md ml-2 hover:bg-red-600"
+              >
+                Eliminar
+              </button>
+
 
               </li>
             ))}
