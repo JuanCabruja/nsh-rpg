@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { StatsContext } from '../Context/StatsContext';
 
 const GestionDeFicha = () => {
-  const { stats, arma, setStats, updateArma, tecnicas, setTecnicas } = useContext(StatsContext);
+  const {  setStats, updateArma,  setTecnicas } = useContext(StatsContext);
 
   const [nombrePersonaje, setNombrePersonaje] = useState('');
 

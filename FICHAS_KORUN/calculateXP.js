@@ -32,7 +32,7 @@ function calculateTotalExp(currentStat, targetStat) {
 }
 
 // Ejemplo de uso:
-const currentStat = 15.5;
+const currentStat = 15;
 const targetStat = 20; // Cambia esto al stat objetivo
 const experienceRequired = calculateTotalExp(currentStat, targetStat);
 console.log(`Experiencia total necesaria para pasar de ${currentStat} a ${targetStat}: ${experienceRequired}`);

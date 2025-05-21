@@ -33,7 +33,6 @@ const CombateManager = () => {
   const [tipo, setTipo] = useState('')
   const nombreDeUsuario = localStorage.getItem('nombreDeUsuario') || 'Yo';
   const [mostrarCamposAdicionales, setMostrarCamposAdicionales] = useState(false);
-  const [accionEditando, setAccionEditando] = useState(null); // guarda el índice de la acción que se está editando
 
   // Cargar datos iniciales desde localStorage o establecer valores iniciales
 useEffect(() => {
@@ -95,66 +94,90 @@ useEffect(() => {
   };
 
   // Manejar una acción
-const manejarAccion = () => {
+  const manejarAccion = () => {
   if (!habilidad || !daño || !costeChakra || !tipo || !ejecutor || !receptor || !ronda) {
     alert('Por favor, completa todos los campos.');
     return;
   }
 
-  const ejecutorIndex = combatientes.findIndex((c) => c.nombre === ejecutor);
-  const receptorIndex = combatientes.findIndex((c) => c.nombre === receptor);
 
-  if (ejecutorIndex === -1 || receptorIndex === -1) {
-    alert('El ejecutor o receptor no existe.');
-    return;
-  }
 
-  let nuevaListaCombatientes = [...combatientes];
+    // Encontrar los índices del ejecutor y receptor
+    const ejecutorIndex = combatientes.findIndex((c) => c.nombre === ejecutor);
+    const receptorIndex = combatientes.findIndex((c) => c.nombre === receptor);
 
-  // Si se está editando, revertir efectos anteriores
-  if (accionEditando !== null) {
-    const accionOriginal = acciones[accionEditando];
-    const ejecutorOrgIndex = combatientes.findIndex(c => c.nombre === accionOriginal.ejecutor);
-    const receptorOrgIndex = combatientes.findIndex(c => c.nombre === accionOriginal.receptor);
-
-    if (ejecutorOrgIndex !== -1) {
-      nuevaListaCombatientes[ejecutorOrgIndex].chakra += parseInt(accionOriginal.costeChakra, 10);
+    if (ejecutorIndex === -1 || receptorIndex === -1) {
+      alert('El ejecutor o receptor no existe.');
+      return;
     }
 
-    if (receptorOrgIndex !== -1) {
-      nuevaListaCombatientes[receptorOrgIndex].vit += parseInt(accionOriginal.daño, 10);
+
+    const ejecutorObj = { ...combatientes[ejecutorIndex] };
+    const receptorObj = { ...combatientes[receptorIndex] };
+
+
+    if (ejecutorIndex === receptorIndex) {
+      ejecutorObj.chakra = Math.max(0, ejecutorObj.chakra - parseInt(costeChakra, 10));
+      ejecutorObj.vit = Math.max(0, receptorObj.vit - parseInt(daño, 10));
+    } else {
+    ejecutorObj.chakra = Math.max(0, ejecutorObj.chakra - parseInt(costeChakra, 10));
+    receptorObj.vit = Math.max(0, receptorObj.vit - parseInt(daño, 10));
     }
-  }
 
-  // Aplicar nueva acción
-  nuevaListaCombatientes[ejecutorIndex].chakra = Math.max(0, nuevaListaCombatientes[ejecutorIndex].chakra - parseInt(costeChakra, 10));
-  nuevaListaCombatientes[receptorIndex].vit = Math.max(0, nuevaListaCombatientes[receptorIndex].vit - parseInt(daño, 10));
 
-  setCombatientes(nuevaListaCombatientes);
+    // Actualizar el estado de los combatientes
+    setCombatientes(combatientes.map((c, index) => {
+    if (ejecutorIndex === receptorIndex) return ejecutorObj;
+    if (index === ejecutorIndex) return ejecutorObj;
+    if (index === receptorIndex) return receptorObj;
+    return c;
+  }));
 
-  const nuevaAccion = { habilidad, daño, costeChakra, tipo, ejecutor, receptor, ronda };
+  // Guardar en localStorage después de actualizar el estado
+  localStorage.setItem('combatientes', JSON.stringify(combatientes.map((c, index) => {
+    if (index === ejecutorIndex) return ejecutorObj;
+    if (index === receptorIndex) return receptorObj;
+    return c;
+  })));
 
-  let nuevasAcciones;
-  if (accionEditando !== null) {
-    nuevasAcciones = [...acciones];
-    nuevasAcciones[accionEditando] = nuevaAccion;
-  } else {
-    nuevasAcciones = [...acciones, nuevaAccion];
-  }
+  // Registrar la acción
+  setAcciones((prevAcciones) => [
+    ...prevAcciones,
+    {
+      habilidad,
+      daño,
+      costeChakra,
+      tipo,
+      ejecutor,
+      receptor,
+      ronda,
+    },
+  ]);
 
-  setAcciones(nuevasAcciones);
-  localStorage.setItem('acciones', JSON.stringify(nuevasAcciones));
-
-  setAccionEditando(null); // salir del modo edición
+  // Limpiar el formulario
   setHabilidad('');
   setDaño('');
   setCosteChakra('');
   setEjecutor('');
   setReceptor('');
   setRonda('');
-  setTipo('');
-};
 
+  // guardar en localStorage después de actualizar el estado
+  const updatedAcciones = [
+    ...acciones,
+    {
+      habilidad,
+      daño,
+      costeChakra,
+      tipo,
+      ejecutor,
+      receptor,
+      ronda,
+    },
+  ];
+
+  localStorage.setItem('acciones', JSON.stringify(updatedAcciones));
+};
 
   // Limpiar la sesión
 const limpiarSesion = () => {
@@ -314,6 +337,13 @@ const copiarVitYCh = () => {
         />
         
 
+        <button
+          onClick={() => setMostrarCamposAdicionales(!mostrarCamposAdicionales)}
+          className="bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition w-full text-sm mb-2"
+        >
+          {mostrarCamposAdicionales ? 'Cerrar reacción enemigo' : 'Agregar reacción enemigo'}
+        </button>
+
         {mostrarCamposAdicionales && (
           <>
 
@@ -324,8 +354,7 @@ const copiarVitYCh = () => {
           onClick={manejarAccion}
           className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition w-full text-sm"
         >
-          {accionEditando !== null ? 'Guardar Cambios' : 'Registrar Acción'}
-
+          Registrar Acción
         </button>
       </div>
 
@@ -352,23 +381,6 @@ const copiarVitYCh = () => {
                 <div className="text-sm text-gray-500">
                   Daño: {accion.daño}, Chakra: -{accion.costeChakra}
                 </div>
-                <button
-                 onClick={() => {
-                   const accion = acciones[index];
-                   setHabilidad(accion.habilidad);
-                   setDaño(accion.daño);
-                   setCosteChakra(accion.costeChakra);
-                   setTipo(accion.tipo);
-                   setEjecutor(accion.ejecutor);
-                   setReceptor(accion.receptor);
-                   setRonda(accion.ronda);
-                   setAccionEditando(index);
-                 }}
-                 className="bg-yellow-400 text-xs px-2 py-1 rounded-md ml-2"
->               
-  Editar
-</button>
-
               </li>
             ))}
           </ul>

@@ -13,6 +13,7 @@ const GestorDeTecnicas = () => {
     area: '',
     calculo: '',
     controlDeMasas: '',
+    cd: '',
     anotaciones: '',
   });
 
@@ -26,6 +27,7 @@ const GestorDeTecnicas = () => {
     costoChakra: '',
     resultado: '',
     controlDeMasas: '',
+    cd: '',
     anotaciones: '',
   });
 
@@ -73,6 +75,7 @@ const GestorDeTecnicas = () => {
       area: '',
       resultado: '',
       controlDeMasas: '',
+      cd: '',
       anotaciones: '',
     });
   };
@@ -83,9 +86,13 @@ const GestorDeTecnicas = () => {
   };
 
   const handleEliminarTecnica = (index) => {
-    const tecnicasActualizadas = tecnicas.filter((_, i) => i !== index);
-    setTecnicas(tecnicasActualizadas);
-    localStorage.setItem('tecnicas', JSON.stringify(tecnicasActualizadas));
+    if (window.confirm('¿Estás seguro de que deseas eliminar esta técnica?')) {
+      const tecnicasActualizadas = tecnicas.filter((_, i) => i !== index);
+      setTecnicas(tecnicasActualizadas);
+      localStorage.setItem('tecnicas', JSON.stringify(tecnicasActualizadas));
+    } else {
+      alert('Eliminación cancelada.');
+    }
   };
 
   const tecnicasFiltradas = tecnicas.filter((tecnica) => {
@@ -99,7 +106,8 @@ const GestorDeTecnicas = () => {
       (filtros.costoChakra === '' || (tecnica.costoChakra && parseFloat(tecnica.costoChakra) >= parseFloat(filtros.costoChakra))) &&
       (filtros.resultado === '' || (tecnica.resultado && parseFloat(tecnica.resultado) >= parseFloat(filtros.resultado))) &&
       (filtros.controlDeMasas === '' || tecnica.controlDeMasas.toLowerCase().includes(filtros.controlDeMasas.toLowerCase())) &&
-      (filtros.anotaciones === '' || tecnica.anotaciones.toLowerCase().includes(filtros.anotaciones.toLowerCase()))
+      (filtros.anotaciones === '' || tecnica.anotaciones.toLowerCase().includes(filtros.anotaciones.toLowerCase())) &&
+      (filtros.cd === '' || tecnica.cd.toLowerCase().includes(filtros.cd.toLowerCase()))
     );
   });
 
@@ -109,7 +117,8 @@ const GestorDeTecnicas = () => {
   const area = tecnica.area && tecnica.area !== 'N/A' && tecnica.area !== "0" ? `/ Área: ${tecnica.area}` : '';
   const resultado = tecnica.resultado && tecnica.resultado !== 'N/A' && parseFloat(tecnica.resultado) !== 0 && tecnica.resultado !== parseFloat(0) ? ` / -${tecnica.resultado}` : '';
   const controlDeMasas = tecnica.controlDeMasas && tecnica.controlDeMasas !== 'N/A' && parseFloat(tecnica.controlDeMasas) !== 0 ? `/ ${tecnica.controlDeMasas}` : '';
-  const texto = window.location.href.includes('localhost') ? `[ ${tecnica.nombre} ${resultado} / ${tecnica.costoChakra || '0'}CH ${alcance} ${area} ${controlDeMasas} ]` : `* ${tecnica.nombre} ${resultado} / ${tecnica.costoChakra || '0'}CH ${alcance} ${area} ${controlDeMasas} *`;
+  const cd = tecnica.cd && tecnica.cd !== 'N/A' && tecnica.cd !== '' && parseFloat(tecnica.cd) !== 0 ? `/ ${tecnica.cd}R CD` : '';
+  const texto = window.location.href.includes('localhost') ? `[ ${tecnica.nombre} ${resultado} / ${tecnica.costoChakra || '0'}CH ${alcance} ${area} ${controlDeMasas} ${cd} ]` : `* ${tecnica.nombre} ${resultado} / ${tecnica.costoChakra || '0'}CH ${alcance} ${area} ${controlDeMasas} ${cd} *`;
   navigator.clipboard.writeText(texto)
 };
 
@@ -203,6 +212,14 @@ const GestorDeTecnicas = () => {
             placeholder="Control de Masas"
             value={nuevaTecnica.controlDeMasas}
             onChange={(e) => setNuevaTecnica({ ...nuevaTecnica, controlDeMasas: e.target.value })}
+            className="border border-gray-300 rounded-md p-2 text-sm"
+          />
+          <input
+            type="text"
+            name="cd"
+            placeholder="CD"
+            value={nuevaTecnica.cd}
+            onChange={(e) => setNuevaTecnica({ ...nuevaTecnica, cd: e.target.value })}
             className="border border-gray-300 rounded-md p-2 text-sm"
           />
         </div>
@@ -324,6 +341,16 @@ const GestorDeTecnicas = () => {
     <th className="border border-gray-300 p-2">
       <input
         type="text"
+        name="cd"
+        placeholder="CD"
+        value={filtros.cd}
+        onChange={handleFiltroChange}
+        className="w-full border border-gray-300 rounded-md p-1 text-xs"
+      />
+    </th>
+    <th className="border border-gray-300 p-2">
+      <input
+        type="text"
         name="anotaciones"
         placeholder="Anotaciones"
         value={filtros.anotaciones}
@@ -349,6 +376,7 @@ const GestorDeTecnicas = () => {
                   <td className="border border-gray-300 p-2">{tecnica.costoChakra || 'N/A'}</td>
                   <td className="border border-gray-300 p-2">{tecnica.resultado || 'N/A'}</td>
                   <td className="border border-gray-300 p-2">{tecnica.controlDeMasas || 'N/A'}</td>
+                  <td className="border border-gray-300 p-2">{tecnica.cd || 'N/A'}</td>
                   <td className="border border-gray-300 p-2">{tecnica.anotaciones}</td>
                   <td className="border border-gray-300 p-2">
                     <button

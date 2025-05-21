@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { StatsContext } from '../Context/StatsContext';
 
+// ESTA QUEDA CAMBIADA
 const CalculadoraDeStats = () => {
   const {
     rango,

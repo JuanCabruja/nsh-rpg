@@ -198,14 +198,24 @@ export const StatsProvider = ({ children }) => {
   };
 
   const calcularRango = (total) => {
-    if (total <= 15) return 'D';
-    if (total <= 19) return 'C';
-    if (total <= 25) return 'B';
-    if (total <= 29) return 'A';
-    return 'S';
+    if (total >= 15 && total < 16) return 'D';
+    if (total >= 16 && total < 20) return 'C';
+    if (total >= 20 && total < 26) return 'B';
+    if (total >= 26 && total < 30) return 'A';
+    if (total >= 30) return 'S';
   };
-
-  const calcularAtributos = (total) => {
+  
+  const calcularVit = (total, fue) => {
+    const fueToAdd = Math.floor(fue) * 150;
+    if (total >= 15 && total < 16) return 1000 + fueToAdd;
+    if (total >= 16 && total < 20) return 1250 + fueToAdd;
+    if (total >= 20 && total < 26) return 1500 + fueToAdd;
+    if (total >= 26 && total < 30) return 1650 + fueToAdd;
+    if (total >= 30) return 1750 + fueToAdd;
+  }
+  
+  const tiposDeAcciones = { 1: 'Anticipación',  2: 'Ofensiva', 3:  'Defensiva', 4: 'Suplementaria', 5: 'Otro'}
+  const calcularAtributos = async (total) => {
     const disponibles = maxStats - total;
 
     let mensaje = '';
@@ -229,7 +239,12 @@ export const StatsProvider = ({ children }) => {
 
     if (!invalido) {
       const { est, agi, int, fue, sm } = stats;
-      const vit = 1250 + ( Math.floor(fue) * 250 );
+      console.log("Llegamos a Rango", rango, est, agi, int, fue, sm);
+      console.log("Stats", stats);
+      const vit = await Promise.resolve(calcularVit(maxStats, fue)).catch((error) => {
+        console.error('Error calculating vit:', error);
+        return 0; // Default value in case of failure
+      });
 
       // Math floor
 
@@ -238,9 +253,9 @@ export const StatsProvider = ({ children }) => {
       const voluntad = int * 5;
 
       let resistencia = 0;
-      if (fue >= 5) resistencia = 20;
-      else if (fue >= 4.5) resistencia = 15;
-      else if (fue >= 4) resistencia = 10;
+      if (fue >= 5) resistencia = 25;
+      else if (fue >= 4) resistencia = 20;
+      else if (fue >= 3) resistencia = 15;
 
       let reflejos = 1;
       if (agi >= 5) reflejos = 3;
@@ -348,7 +363,8 @@ export const StatsProvider = ({ children }) => {
         handlePermitirExceder,
         toggleUsarStatsMejorados,
         guardarStatsActuales,
-        setStatsMejorados
+        setStatsMejorados,
+        tiposDeAcciones
       }}
     >
       {children}
