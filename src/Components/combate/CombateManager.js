@@ -125,12 +125,15 @@ const manejarAccion = () => {
 
   // ⚙️ Revertir efectos si se está editando
   if (accionEditando !== null) {
+
     const accionOriginal = acciones[accionEditando];
     const ejOrgIndex = combatientes.findIndex(c => c.nombre === accionOriginal.ejecutor);
-    const recOrgIndex = combatientes.findIndex(c => c.nombre === accionOriginal.receptor);
+    const recOrgIndex = combatientes.findIndex(c => c.nombre === accionOriginal.receptor);    
 
+    // Aquí voy a tener que tener en cuenta si la acción original es una reacción y demás para que tenga sentido este editar... Es complex. 
     if (ejOrgIndex !== -1) nuevaListaCombatientes[ejOrgIndex].chakra += parseInt(accionOriginal.costeChakra, 10);
     if (recOrgIndex !== -1) nuevaListaCombatientes[recOrgIndex].vit += parseInt(accionOriginal.daño, 10);
+
   }
 
   // 👉 Si la acción reemplaza otra anterior, aplicar la lógica especial
@@ -224,6 +227,9 @@ const eliminarAccion = (index) => {
   const confirmacion = window.confirm('¿Estás seguro de que deseas eliminar esta acción? Esta operación no se puede deshacer.');
   if (!confirmacion) return;
 
+  console.log('Eliminando acción en el índice:', index);
+  console.log('Acciones antes de eliminar:', acciones[index]);
+
   const accion = acciones[index];
   const { ejecutor, receptor, daño, costeChakra, tipo, accionQueReemplaza } = accion;
 
@@ -237,7 +243,7 @@ const eliminarAccion = (index) => {
 
   let nuevaListaCombatientes = [...combatientes];
 
-  if (accionQueReemplaza !== null) {
+  if (accionQueReemplaza !== null && index !== 0) {
     const accionOriginal = acciones[accionQueReemplaza];
     const ejOriginal = combatientes.find(c => c.nombre === accionOriginal.ejecutor);
     const recOriginal = combatientes.find(c => c.nombre === accionOriginal.receptor);
@@ -264,8 +270,16 @@ const eliminarAccion = (index) => {
         break;
 
       case 'Defensiva':
+        console.log(chakraReaccion, dañoReaccion, dañoOriginal, chakraOriginal)
+        if (ejecutorIndex !== -1) nuevaListaCombatientes[ejecutorIndex].chakra += chakraReaccion;
+        if (receptorIndex !== -1) nuevaListaCombatientes[ejecutorIndex].vit += dañoReaccion;
+
+        // Volver a aplicar daño de la acción original
+        if (recOriginalIndex !== -1) nuevaListaCombatientes[ejecutorIndex].vit -= dañoOriginal;
+        break;
       case 'Evasión':
       case 'Anulación':
+        console.log("Entré aquí")
         if (ejecutorIndex !== -1) nuevaListaCombatientes[ejecutorIndex].chakra += chakraReaccion;
         if (receptorIndex !== -1) nuevaListaCombatientes[receptorIndex].vit += dañoReaccion;
 
@@ -549,7 +563,7 @@ const copiarVitYCh = () => {
                 </div>
       )}
 
-                <button
+                {/* <button
                  onClick={() => {
                    const accion = acciones[index];
                    setHabilidad(accion.habilidad);
@@ -564,7 +578,7 @@ const copiarVitYCh = () => {
                  className="bg-yellow-400 text-xs px-2 py-1 rounded-md ml-2"
                 >               
                 Editar
-              </button>
+              </button> */}
               <button
                 onClick={() => eliminarAccion(index)}
                 className="bg-red-500 text-xs text-white px-2 py-1 rounded-md ml-2 hover:bg-red-600"
