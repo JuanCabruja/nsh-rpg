@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CombateCard = ({ nombreInicial, vit, chakra, nombre }) => {
+const CombateCard = ({ nombreInicial, vit, chakra, vel, nombre }) => {
   const copiarAlPortapapeles = () => {
     const texto = `[ PT / ${chakra} CH ]`;
     navigator.clipboard.writeText(texto)
@@ -17,6 +17,10 @@ const CombateCard = ({ nombreInicial, vit, chakra, nombre }) => {
         <div>
           <label className="block text-sm font-bold text-gray-700 mb-1">Chakra:</label>
           <span className="text-blue-700 font-bold text-lg">{chakra}</span>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-1">VEL:</label>
+          <span className="text-blue-700 font-bold text-lg">{vel}</span>
         </div>
       </div>
       <button

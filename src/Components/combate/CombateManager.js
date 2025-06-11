@@ -1,8 +1,10 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { StatsContext } from '../../Context/StatsContext';
 import CombateCard from './CombateCard';
+import { create, all } from 'mathjs';
 
 const CombateManager = () => {
+  const math = create(all);
   const { resultados } = useContext(StatsContext);
 
   const tiposDeAcciones =  ['Anticipación',  'Ofensiva',   'Defensiva', 'Evasión', 'Anulación', 'Suplementaria', 'Contraataque', 'Otro']
@@ -21,9 +23,31 @@ const CombateManager = () => {
     return savedAcciones;
   });
 
+  const [tecnicas, setTecnicas] =  useState(() => {
+    // Cargar técnicas desde localStorage
+    const savedTecnicas = JSON.parse(localStorage.getItem('tecnicas')) || [];
+    return savedTecnicas;
+  }); // Estado para almacenar las técnicas
+
+  useEffect(() => {
+  const handleStorageChange = (event) => {
+    console.log('Cambio en localStorage:', event);
+    if (event.key === 'tecnicas') {
+      // Recarga el valor actualizado
+      const savedTecnicas = JSON.parse(localStorage.getItem('tecnicas')) || [];
+      setTecnicas(savedTecnicas);
+    }
+  };
+
+  window.addEventListener('storage', handleStorageChange);
+  return () => window.removeEventListener('storage', handleStorageChange);
+}, []);
+
+
   const [nombreEnemigo, setNombreEnemigo] = useState('');
   const [vitEnemigo, setVitEnemigo] = useState('');
   const [chakraEnemigo, setChakraEnemigo] = useState('');
+  const [velEnemigo, setVelEnemigo] = useState('');
   const [habilidad, setHabilidad] = useState('');
   const [daño, setDaño] = useState('');
   const [costeChakra, setCosteChakra] = useState('');
@@ -56,10 +80,10 @@ useEffect(() => {
 
 useEffect(() => {
   // Si resultados cambia y no hay combatientes, agregar al usuario
-  if (resultados?.vit && resultados?.chakra && combatientes.length === 0) {
-    console.log("entré en la que está rompiedo")
+  if (resultados?.vit && resultados?.chakra && resultados?.velocidad && combatientes.length === 0) {
+    console.log("entré en la que está rompiedo",{ id: 1, nombre: nombreDeUsuario, vit: resultados.vit, chakra: resultados.chakra, vel: resultados.velocidad } )
     setCombatientes([
-      { id: 1, nombre: nombreDeUsuario, vit: resultados.vit, chakra: resultados.chakra },
+      { id: 1, nombre: nombreDeUsuario, vit: resultados.vit, chakra: resultados.chakra, vel: resultados.velocidad },
     ]);
   }
 }, [resultados, combatientes]);
@@ -72,16 +96,17 @@ useEffect(() => {
 
   // Agregar un nuevo combatiente
   const agregarCombatiente = async () => {
-    if (!nombreEnemigo || !vitEnemigo || !chakraEnemigo) {
-      alert('Por favor, completa todos los campos.');
+    if (!nombreEnemigo || isNaN(vitEnemigo) || isNaN(chakraEnemigo) || isNaN(velEnemigo)) {
+      alert('Por favor, completa todos los campos con valores válidos.');
       return;
     }
 
     const nuevoCombatiente = {
       id: combatientes.length + 1,
       nombre: nombreEnemigo,
-      vit: parseInt(vitEnemigo, 10),
-      chakra: parseInt(chakraEnemigo, 10),
+      vit: Math.max(0, parseInt(vitEnemigo, 10) || 0),
+      chakra: Math.max(0, parseInt(chakraEnemigo, 10) || 0),
+      vel: Math.max(0, parseInt(velEnemigo, 10) || 0),
     };
 
 
@@ -90,6 +115,7 @@ useEffect(() => {
     setNombreEnemigo('');
     setVitEnemigo('');
     setChakraEnemigo('');
+    setVelEnemigo('');
 
     // Guardar en localStorage después de actualizar el estado
     const updatedCombatientes = [...combatientes, nuevoCombatiente];
@@ -98,8 +124,8 @@ useEffect(() => {
 
   // Manejar una acción
 const manejarAccion = () => {
-  if (!habilidad || !daño || !costeChakra || !tipo || !ejecutor || !receptor || !ronda) {
-    alert('Por favor, completa todos los campos.');
+  if (!habilidad || isNaN(costeChakra) || !tipo || !ejecutor || !receptor || !ronda) {
+    alert('Por favor, completa todos los campos con valores válidos.');
     return;
   }
 
@@ -145,7 +171,15 @@ const manejarAccion = () => {
       const ejAntIndex = combatientes.findIndex(c => c.nombre === accionAnterior.ejecutor);
       const recAntIndex = combatientes.findIndex(c => c.nombre === accionAnterior.receptor);
 
-      const dañoNuevo = parseInt(daño, 10);
+        
+      let dañoNuevo;
+      try { 
+        dañoNuevo = math.evaluate(daño.toString()); 
+      } catch (error) { 
+        console.log('Error al evaluar el daño:', error);
+        alert('La expresión matemática en el campo de daño no es válida.'); 
+        return; 
+      }
       const chakraNuevo = parseInt(costeChakra, 10);
       const dañoAntiguo = parseInt(accionAnterior.daño, 10);
       const chakraAntiguo = parseInt(accionAnterior.costeChakra, 10);
@@ -180,14 +214,23 @@ const manejarAccion = () => {
 
   // ✅ Aplicación estándar si no es una reacción especial
   if (aplicarEfectos) {
+
+      let dañoEvaluado;
+  try {
+    // Evaluar la expresión matemática ingresada en el campo de daño
+    dañoEvaluado = math.evaluate(daño.toString());
+  } catch (error) {
+    alert('La expresión matemática en el campo de daño no es válida.');
+    return;
+  }
     nuevaListaCombatientes[ejecutorIndex].chakra = Math.max(0, nuevaListaCombatientes[ejecutorIndex].chakra - parseInt(costeChakra, 10));
-    nuevaListaCombatientes[receptorIndex].vit = Math.max(0, nuevaListaCombatientes[receptorIndex].vit - parseInt(daño, 10));
+    nuevaListaCombatientes[receptorIndex].vit = Math.max(0, nuevaListaCombatientes[receptorIndex].vit - parseInt(dañoEvaluado, 10));
   }
 
   // 🧠 Construir y guardar nueva acción
   const nuevaAccion = {
     habilidad,
-    daño,
+    daño: math.evaluate(daño.toString()),
     costeChakra,
     tipo,
     ejecutor,
@@ -333,12 +376,6 @@ const eliminarAccion = (index) => {
   }
 };
 
-
-
-
-
-
-
   // Limpiar la sesión
 const limpiarSesion = () => {
   
@@ -363,6 +400,29 @@ const copiarVitYCh = () => {
   const stats = `[ ${resultados.vit} VIT / ${resultados.chakra} CH ]`
   navigator.clipboard.writeText(stats)
 }
+
+
+const copiarAccion = (accion) => {
+  if (accion.ejecutor === nombreDeUsuario && accion.accionQueReemplaza === null) {
+    const tecnicaSeleccionada = tecnicas.find((t) => t.nombre === accion.habilidad);
+    if (tecnicaSeleccionada) {
+      const alcance = tecnicaSeleccionada.alcance ? `/ Alcance: ${tecnicaSeleccionada.alcance}` : '';
+      const area = tecnicaSeleccionada.area && tecnicaSeleccionada.area !== 'N/A' && tecnicaSeleccionada.area !== "0" ? `/ Área: ${tecnicaSeleccionada.area}` : '';
+      // const resultado = tecnicaSeleccionada.resultado && tecnicaSeleccionada.resultado !== 'N/A' && parseFloat(tecnicaSeleccionada.resultado) !== 0 ? ` / -${tecnicaSeleccionada.resultado}` : '';
+      const resultado = accion.daño ? ` / -${accion.daño}` : ''; // Usar el daño registrado en la acción
+      const controlDeMasas = tecnicaSeleccionada.controlDeMasas && tecnicaSeleccionada.controlDeMasas !== 'N/A' && parseFloat(tecnicaSeleccionada.controlDeMasas) !== 0 ? `/ ${tecnicaSeleccionada.controlDeMasas}` : '';
+      const cd = tecnicaSeleccionada.cd && tecnicaSeleccionada.cd !== 'N/A' && tecnicaSeleccionada.cd !== '' && parseFloat(tecnicaSeleccionada.cd) !== 0 ? `/ ${tecnicaSeleccionada.cd}R CD` : '';
+      const texto = window.location.href.includes('localhost') 
+        ? `[ ${tecnicaSeleccionada.nombre} ${resultado} / ${tecnicaSeleccionada.costoChakra || '0'}CH ${alcance} ${area} ${controlDeMasas} ${cd} ]` 
+        : `* ${tecnicaSeleccionada.nombre} ${resultado} / ${tecnicaSeleccionada.costoChakra || '0'}CH ${alcance} ${area} ${controlDeMasas} ${cd} *`;
+      navigator.clipboard.writeText(texto);
+    }
+  } else {
+    const texto = `${window.location.href.includes('localhost') ? '[' : '*'} ${accion.habilidad} / -${accion.daño} / ${accion.costeChakra} CH ${window.location.href.includes('localhost') ? ']' : '*'}`;
+    navigator.clipboard.writeText(texto);
+  }
+};
+
   return (
     <div className="bg-white shadow-lg rounded-lg p-4 w-full border border-yellow-600">
       <h2 className="text-red-600 font-bold text-lg mb-4 text-center">Gestión de Combate</h2>
@@ -399,6 +459,13 @@ const copiarVitYCh = () => {
           placeholder="Chakra"
           className="w-full border border-gray-300 rounded-md p-2 text-sm mb-2"
         />
+        <input
+          type="number"
+          value={velEnemigo}
+          onChange={(e) => setVelEnemigo(e.target.value)}
+          placeholder="Velocidad"
+          className="w-full border border-gray-300 rounded-md p-2 text-sm mb-2"
+        />
         <button
           onClick={agregarCombatiente}
           className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition w-full text-sm"
@@ -423,6 +490,7 @@ const copiarVitYCh = () => {
               nombre={combatiente.nombre}
               vit={combatiente.vit}
               chakra={combatiente.chakra}
+              vel={combatiente.vel}
             />
           </div>
         ))}
@@ -430,8 +498,31 @@ const copiarVitYCh = () => {
 
       {/* Formulario para registrar acciones */}
       <div className="mb-4">
+
+        <h3 className="text-gray-800 font-bold text-md mb-2">Mis técnicas:</h3>
+        {/* Menú desplegable para seleccionar una técnica */}
+        <select
+          onChange={(e) => {
+            const tecnicaSeleccionada = tecnicas.find((t) => t.nombre === e.target.value);
+            if (tecnicaSeleccionada) {
+              setHabilidad(tecnicaSeleccionada.nombre);
+              setDaño(tecnicaSeleccionada.resultado || ''); // Usa el daño calculado o vacío
+              setCosteChakra(tecnicaSeleccionada.costoChakra || '');
+              setTipo(tecnicaSeleccionada.tipo || '');
+            }
+          }}
+          className="w-full border border-gray-300 rounded-md p-2 text-sm mb-2"
+        >
+          <option value="">Seleccionar Técnica</option>
+          {tecnicas.map((tecnica, index) => (
+            <option key={index} value={tecnica.nombre}>
+              {tecnica.nombre} - {tecnica.tipo}
+            </option>
+          ))}
+        </select>
+
         <h3 className="text-gray-800 font-bold text-md mb-2">Registrar Acción</h3>
-                    <select
+        <select
         value={accionQueReemplaza}
         onChange={(e) => {
           const idx = e.target.value;
@@ -462,7 +553,7 @@ const copiarVitYCh = () => {
           className="w-full border border-gray-300 rounded-md p-2 text-sm mb-2"
         />
         <input
-          type="number"
+          type="text"
           value={daño}
           onChange={(e) => setDaño(e.target.value)}
           placeholder="Daño indicar siempre cuanto daño hace o cuanto recibe  (ejemplo: 200)"
@@ -536,64 +627,59 @@ const copiarVitYCh = () => {
 
       {/* Lista de acciones */}
       <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-4">
-        <h3 className="text-gray-800 font-bold text-md mb-2">Historial de Acciones</h3>
-        {acciones.length > 0 ? (
-          <ul className="space-y-2">
-            {acciones.map((accion, index) => (
-              <li
-                key={index}
-                className="flex justify-between items-center bg-white p-2 rounded-md shadow-sm border border-gray-300"
-              >
-                <div>
-                  <span className="font-bold text-gray-700">{accion.habilidad}</span> -{' '}
-                  <span className="text-sm text-gray-500">Ronda {accion.ronda}</span>
-                </div>
-                <div className="text-sm text-gray-600">
-                  {accion.tipo}
-                </div>
-                <div className="text-sm text-gray-600">
-                  {accion.ejecutor} → {accion.receptor}
-                </div>
-                <div className="text-sm text-gray-500">
-                  Daño: {accion.daño}, Chakra: -{accion.costeChakra}
-                </div>
-                {accion.accionQueReemplaza !== null && (
-                  <div className="text-xs italic text-blue-500 mt-1">
-                  Reemplaza a acción #{accion.accionQueReemplaza + 1}
-                </div>
-      )}
-
-                {/* <button
-                 onClick={() => {
-                   const accion = acciones[index];
-                   setHabilidad(accion.habilidad);
-                   setDaño(accion.daño);
-                   setCosteChakra(accion.costeChakra);
-                   setTipo(accion.tipo);
-                   setEjecutor(accion.ejecutor);
-                   setReceptor(accion.receptor);
-                   setRonda(accion.ronda);
-                   setAccionEditando(index);
-                 }}
-                 className="bg-yellow-400 text-xs px-2 py-1 rounded-md ml-2"
-                >               
-                Editar
-              </button> */}
-              <button
-                onClick={() => eliminarAccion(index)}
-                className="bg-red-500 text-xs text-white px-2 py-1 rounded-md ml-2 hover:bg-red-600"
-              >
-                Eliminar
-              </button>
-
-
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-500 text-sm">No hay acciones registradas.</p>
-        )}
-      </div>
+  <h3 className="text-gray-800 font-bold text-md mb-2">Historial de Acciones</h3>
+  {acciones.length > 0 ? (
+    <div className="overflow-x-auto">
+      <table className="table-auto w-full border-collapse border border-gray-300">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="border border-gray-300 px-4 py-2 text-left text-sm text-gray-600">Habilidad</th>
+            <th className="border border-gray-300 px-4 py-2 text-left text-sm text-gray-600">Ronda</th>
+            <th className="border border-gray-300 px-4 py-2 text-left text-sm text-gray-600">Tipo</th>
+            <th className="border border-gray-300 px-4 py-2 text-left text-sm text-gray-600">Ejecutor → Receptor</th>
+            <th className="border border-gray-300 px-4 py-2 text-left text-sm text-gray-600">Daño / Chakra</th>
+            <th className="border border-gray-300 px-4 py-2 text-left text-sm text-gray-600">Reacción</th>
+            <th className="border border-gray-300 px-4 py-2 text-center text-sm text-gray-600">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {acciones.map((accion, index) => (
+            <tr key={index} className="hover:bg-gray-100">
+              <td className="border border-gray-300 px-4 py-2 text-sm text-gray-700">{accion.habilidad}</td>
+              <td className="border border-gray-300 px-4 py-2 text-sm text-gray-500">Ronda {accion.ronda}</td>
+              <td className="border border-gray-300 px-4 py-2 text-sm text-gray-600">{accion.tipo}</td>
+              <td className="border border-gray-300 px-4 py-2 text-sm text-gray-600">
+                {accion.ejecutor} → {accion.receptor}
+              </td>
+              <td className="border border-gray-300 px-4 py-2 text-sm text-gray-500">
+                Daño: {accion.daño}, Chakra: -{accion.costeChakra}
+              </td>
+              <td className="border border-gray-300 px-4 py-2 text-xs italic text-blue-500">
+                {accion.accionQueReemplaza !== null ? `Reacciona a acción #${accion.accionQueReemplaza + 1}` : 'N/A'}
+              </td>
+              <td className="border border-gray-300 px-4 py-2 text-center">
+                <button
+                  onClick={() => copiarAccion(accion)}
+                  className="bg-green-500 text-xs text-white px-2 py-1 rounded-md hover:bg-green-600"
+                >
+                  Copiar
+                </button>
+                <button
+                  onClick={() => eliminarAccion(index)}
+                  className="bg-red-500 text-xs text-white px-2 py-1 rounded-md hover:bg-red-600 ml-2"
+                >
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  ) : (
+    <p className="text-gray-500 text-sm">No hay acciones registradas.</p>
+  )}
+</div>
     </div>
   );
 };

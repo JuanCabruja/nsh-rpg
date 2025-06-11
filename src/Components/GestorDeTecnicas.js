@@ -130,6 +130,7 @@ const GestorDeTecnicas = () => {
         resultado: calcularDaño(tecnica.calculo), // Recalcular el daño/defensa
       }));
       setTecnicas(tecnicasActualizadas);
+      localStorage.setItem('tecnicas', JSON.stringify(tecnicasActualizadas));
     }
   }, [stats, arma]); 
 
