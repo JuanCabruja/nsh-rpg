@@ -4,6 +4,7 @@ import Estadisticas from './Estadisticas';
 import GestorDeTecnicas from './GestorDeTecnicas';
 import CombateManager from './combate/CombateManager';
 import CombateManagerNewDev from './combate/CombateManagerNewDev';
+import CombateManagerComponent from './combate/CombateManagerComponent';
 import ArmasNinja from './ArmasNinja';
 import CalculadoraDaños from './CalculadoraDaños';
 import GestionDeFicha from './GestionDeFicha'; // Nuevo componente
@@ -64,7 +65,8 @@ const Calculadora = () => {
 
         {paginaActual === 2 && (
           <div className="flex flex-col gap-6 p-6 bg-papiro bg-cover bg-center bg-blend-multiply bg-narutoLight text-narutoDark max-w-screen-2xl mx-auto">
-            <CombateManager />
+            {/* <CombateManager /> */}
+            <CombateManagerComponent />
             {/* <CombateManagerNewDev /> */}
           </div>
         )}
